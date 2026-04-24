@@ -1,0 +1,17 @@
+name: "Episodic Pivot"
+version: "1.0"
+
+entry:
+  min_gap_pct: 5.0
+  min_volume_ratio: 2.5
+  min_price: 5.0
+  max_days_since_event: 10
+
+position:
+  stop_loss_pct: 8.0
+  target_1_pct: 15.0
+  target_2_pct: 30.0
+  max_hold_days: 20
+
+scoring:
+  min_score: 60

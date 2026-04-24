@@ -1,0 +1,242 @@
+2026-04-22 13:25:11,185 INFO ==================================================
+2026-04-22 13:25:11,185 INFO Scanner EP agendado a iniciar
+2026-04-22 13:25:11,185 INFO ==================================================
+2026-04-22 13:25:11,185 INFO Data: 2026-04-22
+2026-04-22 13:25:11,185 INFO Universo: 54 tickers
+2026-04-22 13:25:11,185 INFO Scanner a iniciar: 54 tickers
+2026-04-22 13:25:21,880 INFO Candidatos encontrados: 5
+2026-04-22 13:25:21,892 INFO Top candidatos:
+2026-04-22 13:25:21,892 INFO   IONQ | Score: 75.0 | Gap: 7.3% | Vol: 5.6x | PRIME
+2026-04-22 13:25:21,892 INFO   QBTS | Score: 75.0 | Gap: 9.2% | Vol: 5.0x | PRIME
+2026-04-22 13:25:21,892 INFO   ARQQ | Score: 65.0 | Gap: 8.5% | Vol: 5.9x | PRIME
+2026-04-22 13:25:21,892 INFO   HIMS | Score: 65.0 | Gap: 7.7% | Vol: 3.3x | PRIME
+2026-04-22 13:25:21,892 INFO   QUBT | Score: 60.0 | Gap: 5.4% | Vol: 5.1x | PRIME
+2026-04-22 13:25:21,892 INFO Scanner concluido.
+2026-04-22 13:37:25,940 INFO =======================================================
+2026-04-22 13:37:25,940 INFO Scanner EP + Decision Engine a iniciar
+2026-04-22 13:37:25,940 INFO =======================================================
+2026-04-22 13:37:25,940 INFO Data: 2026-04-22
+2026-04-22 13:37:25,941 INFO Fase 1: Scanner EP...
+2026-04-22 13:37:25,941 INFO Scanner a iniciar: 54 tickers
+2026-04-22 13:37:36,205 INFO Candidatos: 5 de 54 tickers
+2026-04-22 13:37:36,216 INFO Fase 2: Decision Engine — a avaliar 5 candidatos...
+2026-04-22 13:37:36,229 INFO 🔴 IONQ → SKIP (confiança: 95%)
+2026-04-22 13:37:41,187 INFO 🔴 QBTS → SKIP (confiança: 85.0%)
+2026-04-22 13:37:45,828 INFO 🔴 ARQQ → SKIP (confiança: 85.0%)
+2026-04-22 13:37:45,833 INFO 🔴 HIMS → SKIP (confiança: 95%)
+2026-04-22 13:37:50,578 INFO 🔴 QUBT → SKIP (confiança: 85.0%)
+2026-04-22 13:37:50,578 INFO 
+2026-04-22 13:37:50,578 INFO ── DECISÕES ──────────────────────────────────
+2026-04-22 13:37:50,578 INFO 🔴 IONQ → SKIP | Confiança: 95% | R/R: 1.87
+2026-04-22 13:37:50,578 INFO 🔴 HIMS → SKIP | Confiança: 95% | R/R: 1.88
+2026-04-22 13:37:50,578 INFO 🔴 QBTS → SKIP | Confiança: 85.0% | R/R: 1.87
+2026-04-22 13:37:50,579 INFO 🔴 ARQQ → SKIP | Confiança: 85.0% | R/R: 1.87
+2026-04-22 13:37:50,579 INFO 🔴 QUBT → SKIP | Confiança: 85.0% | R/R: 1.88
+2026-04-22 13:37:50,579 INFO 
+2026-04-22 13:37:50,579 INFO ENTRAR (0): 
+2026-04-22 13:37:50,579 INFO AGUARDAR (0): 
+2026-04-22 13:37:50,579 INFO SALTAR (5): IONQ, HIMS, QBTS, ARQQ, QUBT
+2026-04-22 13:37:50,579 INFO 
+2026-04-22 13:37:50,579 INFO Scan + Decision Engine concluidos.
+2026-04-22 13:40:17,167 INFO =======================================================
+2026-04-22 13:40:17,167 INFO Scanner EP + Decision Engine a iniciar
+2026-04-22 13:40:17,168 INFO =======================================================
+2026-04-22 13:40:17,168 INFO Data: 2026-04-22
+2026-04-22 13:40:17,168 INFO Fase 1: Scanner EP...
+2026-04-22 13:40:17,168 INFO Scanner a iniciar: 54 tickers
+2026-04-22 13:40:27,973 INFO Candidatos: 5 de 54 tickers
+2026-04-22 13:40:27,990 INFO Fase 2: Decision Engine — a avaliar 5 candidatos...
+2026-04-22 13:40:28,000 INFO 🔴 IONQ → SKIP (confiança: 95%)
+2026-04-22 13:40:31,467 INFO 🔴 QBTS → SKIP (confiança: 85.0%)
+2026-04-22 13:40:37,001 INFO 🔴 ARQQ → SKIP (confiança: 85.0%)
+2026-04-22 13:40:37,005 INFO 🔴 HIMS → SKIP (confiança: 95%)
+2026-04-22 13:40:41,443 INFO 🔴 QUBT → SKIP (confiança: 85.0%)
+2026-04-22 13:40:41,443 INFO 
+2026-04-22 13:40:41,443 INFO ── DECISÕES ──────────────────────────────────
+2026-04-22 13:40:41,443 INFO 🔴 IONQ → SKIP | Confiança: 95% | R/R: 1.87
+2026-04-22 13:40:41,443 INFO 🔴 HIMS → SKIP | Confiança: 95% | R/R: 1.88
+2026-04-22 13:40:41,443 INFO 🔴 QBTS → SKIP | Confiança: 85.0% | R/R: 1.87
+2026-04-22 13:40:41,443 INFO 🔴 ARQQ → SKIP | Confiança: 85.0% | R/R: 1.87
+2026-04-22 13:40:41,443 INFO 🔴 QUBT → SKIP | Confiança: 85.0% | R/R: 1.88
+2026-04-22 13:40:41,444 INFO 
+2026-04-22 13:40:41,444 INFO ENTRAR (0): 
+2026-04-22 13:40:41,444 INFO AGUARDAR (0): 
+2026-04-22 13:40:41,444 INFO SALTAR (5): IONQ, HIMS, QBTS, ARQQ, QUBT
+2026-04-22 13:40:41,444 INFO 
+2026-04-22 13:40:41,444 INFO Scan + Decision Engine concluidos.
+2026-04-22 18:20:44,537 INFO =======================================================
+2026-04-22 18:20:44,537 INFO Scanner EP + Decision Engine a iniciar
+2026-04-22 18:20:44,537 INFO =======================================================
+2026-04-22 18:20:44,538 INFO Data: 2026-04-22
+2026-04-22 18:20:44,538 INFO Fase 1: Scanner EP...
+2026-04-22 18:20:44,538 INFO Scanner a iniciar: 54 tickers
+2026-04-22 18:20:54,737 INFO Candidatos: 5 de 54 tickers
+2026-04-22 18:20:54,747 INFO Fase 2: Decision Engine — a avaliar 5 candidatos...
+2026-04-22 18:20:54,758 INFO 🔴 IONQ → SKIP (confiança: 95%)
+2026-04-22 18:20:59,025 INFO 🔴 QBTS → SKIP (confiança: 95.0%)
+2026-04-22 18:21:03,749 INFO 🔴 ARQQ → SKIP (confiança: 95.0%)
+2026-04-22 18:21:03,754 INFO 🔴 HIMS → SKIP (confiança: 95%)
+2026-04-22 18:21:07,925 INFO 🔴 QUBT → SKIP (confiança: 85.0%)
+2026-04-22 18:21:07,925 INFO 
+2026-04-22 18:21:07,925 INFO ── DECISÕES ──────────────────────────────────
+2026-04-22 18:21:07,925 INFO 🔴 IONQ → SKIP | Confiança: 95% | R/R: 1.87
+2026-04-22 18:21:07,925 INFO 🔴 QBTS → SKIP | Confiança: 95.0% | R/R: 1.87
+2026-04-22 18:21:07,926 INFO 🔴 ARQQ → SKIP | Confiança: 95.0% | R/R: 1.87
+2026-04-22 18:21:07,926 INFO 🔴 HIMS → SKIP | Confiança: 95% | R/R: 1.88
+2026-04-22 18:21:07,926 INFO 🔴 QUBT → SKIP | Confiança: 85.0% | R/R: 1.88
+2026-04-22 18:21:07,926 INFO 
+2026-04-22 18:21:07,926 INFO ENTRAR (0): 
+2026-04-22 18:21:07,926 INFO AGUARDAR (0): 
+2026-04-22 18:21:07,926 INFO SALTAR (5): IONQ, QBTS, ARQQ, HIMS, QUBT
+2026-04-22 18:21:07,926 INFO 
+2026-04-22 18:21:07,926 INFO Scan + Decision Engine concluidos.
+2026-04-23 15:00:02,295 INFO =======================================================
+2026-04-23 15:00:02,295 INFO Scanner EP + Decision Engine a iniciar
+2026-04-23 15:00:02,295 INFO =======================================================
+2026-04-23 15:00:02,295 INFO Data: 2026-04-23
+2026-04-23 15:00:02,295 INFO Fase 1: Scanner EP...
+2026-04-23 15:00:02,295 INFO Scanner a iniciar: 54 tickers
+2026-04-23 15:00:13,635 INFO Candidatos: 6 de 54 tickers
+2026-04-23 15:00:13,645 INFO Fase 2: Decision Engine — a avaliar 6 candidatos...
+2026-04-23 15:00:13,655 INFO 🔴 IONQ → SKIP (confiança: 95%)
+2026-04-23 15:00:19,146 INFO 🔴 QBTS → SKIP (confiança: 85.0%)
+2026-04-23 15:00:23,259 INFO 🟢 NVTS → ENTER (confiança: 85.0%)
+2026-04-23 15:00:26,855 INFO 🔴 ARQQ → SKIP (confiança: 85.0%)
+2026-04-23 15:00:26,860 INFO 🔴 HIMS → SKIP (confiança: 95%)
+2026-04-23 15:00:30,831 INFO 🔴 QUBT → SKIP (confiança: 85.0%)
+2026-04-23 15:00:30,831 INFO 
+2026-04-23 15:00:30,831 INFO ── DECISÕES ──────────────────────────────────
+2026-04-23 15:00:30,832 INFO 🔴 IONQ → SKIP | Confiança: 95% | R/R: 1.87
+2026-04-23 15:00:30,832 INFO 🔴 HIMS → SKIP | Confiança: 95% | R/R: 1.88
+2026-04-23 15:00:30,832 INFO 🔴 QBTS → SKIP | Confiança: 85.0% | R/R: 1.87
+2026-04-23 15:00:30,832 INFO 🟢 NVTS → ENTER | Confiança: 85.0% | R/R: 1.87
+2026-04-23 15:00:30,832 INFO 🔴 ARQQ → SKIP | Confiança: 85.0% | R/R: 1.88
+2026-04-23 15:00:30,832 INFO 🔴 QUBT → SKIP | Confiança: 85.0% | R/R: 1.88
+2026-04-23 15:00:30,832 INFO 
+2026-04-23 15:00:30,832 INFO ENTRAR (1): NVTS
+2026-04-23 15:00:30,832 INFO AGUARDAR (0): 
+2026-04-23 15:00:30,832 INFO SALTAR (5): IONQ, HIMS, QBTS, ARQQ, QUBT
+2026-04-23 15:00:30,832 INFO 
+2026-04-23 15:00:30,833 INFO ── TOP RECOMENDAÇÕES ─────────────────────────
+2026-04-23 15:00:30,833 INFO 
+2026-04-23 15:00:30,833 INFO NVTS @ $18.47
+2026-04-23 15:00:30,833 INFO   Stop: $16.99 | T1: $21.24
+2026-04-23 15:00:30,833 INFO   Score EP sólido de 70/100 com gap de 9.4% e volume elevado 4.3x. Janela PRIME é ideal para entrada e histórico perfeito de 5 wins consecutivos demonstra consistência. Setup limpo sem alertas ou red fl
+2026-04-23 15:00:30,833 INFO 
+2026-04-23 15:00:30,833 INFO Scan + Decision Engine concluidos.
+2026-04-23 22:14:56,624 INFO =======================================================
+2026-04-23 22:14:56,625 INFO Scanner EP + Decision Engine a iniciar
+2026-04-23 22:14:56,625 INFO =======================================================
+2026-04-23 22:14:56,625 INFO Data: 2026-04-23
+2026-04-23 22:14:56,625 INFO Fase 1: Scanner EP...
+2026-04-23 22:14:56,625 INFO Scanner a iniciar: 54 tickers
+2026-04-23 22:15:15,450 INFO Candidatos: 6 de 54 tickers
+2026-04-23 22:15:15,460 INFO Fase 2: Decision Engine — a avaliar 6 candidatos...
+2026-04-23 22:15:15,468 INFO A analisar catalisadores de 6 candidatos...
+2026-04-23 22:15:15,468 INFO A analisar catalisador: IONQ
+2026-04-23 22:15:33,512 INFO 🟢 IONQ — Earnings Beat Wide Margin | Qualidade: HIGH (85.0)
+2026-04-23 22:15:33,512 INFO A analisar catalisador: QBTS
+2026-04-23 22:15:34,097 ERROR Erro ao analisar catalisador de QBTS: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-23 22:15:34,098 INFO 🟡 QBTS — Outro | Qualidade: MEDIUM (50.0)
+2026-04-23 22:15:34,098 INFO A analisar catalisador: NVTS
+2026-04-23 22:15:57,271 INFO 🔴 NVTS — Retail Momentum | Qualidade: LOW (25.0)
+2026-04-23 22:15:57,271 INFO A analisar catalisador: ARQQ
+2026-04-23 22:16:20,123 INFO 🟡 ARQQ — Earnings 100%+ | Qualidade: MEDIUM (65.0)
+2026-04-23 22:16:20,123 INFO A analisar catalisador: HIMS
+2026-04-23 22:16:20,630 ERROR Erro ao analisar catalisador de HIMS: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-23 22:16:20,631 INFO 🟡 HIMS — Outro | Qualidade: MEDIUM (50.0)
+2026-04-23 22:16:20,632 INFO A analisar catalisador: QUBT
+2026-04-23 22:16:21,078 ERROR Erro ao analisar catalisador de QUBT: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-23 22:16:21,079 INFO 🟡 QUBT — Outro | Qualidade: MEDIUM (50.0)
+2026-04-23 22:16:21,082 ERROR Erro ao avaliar IONQ: table decisions has no column named catalyst_type
+2026-04-23 22:16:21,809 ERROR Erro API specialist: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-23 22:16:21,812 ERROR Erro ao avaliar QBTS: table decisions has no column named catalyst_type
+2026-04-23 22:16:21,814 ERROR Erro ao avaliar NVTS: table decisions has no column named catalyst_type
+2026-04-23 22:16:22,489 ERROR Erro API specialist: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-23 22:16:22,491 ERROR Erro ao avaliar ARQQ: table decisions has no column named catalyst_type
+2026-04-23 22:16:22,494 ERROR Erro ao avaliar HIMS: table decisions has no column named catalyst_type
+2026-04-23 22:16:23,006 ERROR Erro API specialist: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-23 22:16:23,009 ERROR Erro ao avaliar QUBT: table decisions has no column named catalyst_type
+2026-04-23 22:16:23,009 INFO 
+2026-04-23 22:16:23,009 INFO ── DECISÕES ──────────────────────────────────
+2026-04-23 22:16:23,009 INFO 🔴 IONQ → SKIP | Confiança: 90.0% | R/R: 1.87
+2026-04-23 22:16:23,009 INFO 🔴 NVTS → SKIP | Confiança: 90.0% | R/R: 1.87
+2026-04-23 22:16:23,009 INFO 🔴 HIMS → SKIP | Confiança: 90.0% | R/R: 1.88
+2026-04-23 22:16:23,009 INFO 🟢 QBTS → ENTER | Confiança: 56.0% | R/R: 1.87
+2026-04-23 22:16:23,009 INFO 🟢 ARQQ → ENTER | Confiança: 49.0% | R/R: 1.88
+2026-04-23 22:16:23,009 INFO 🟡 QUBT → WATCH | Confiança: 45.0% | R/R: 1.88
+2026-04-23 22:16:23,009 INFO 
+2026-04-23 22:16:23,009 INFO ENTRAR (2): QBTS, ARQQ
+2026-04-23 22:16:23,010 INFO AGUARDAR (1): QUBT
+2026-04-23 22:16:23,010 INFO SALTAR (3): IONQ, NVTS, HIMS
+2026-04-23 22:16:23,010 INFO 
+2026-04-23 22:16:23,010 INFO ── TOP RECOMENDAÇÕES ─────────────────────────
+2026-04-23 22:16:23,010 INFO 
+2026-04-23 22:16:23,010 INFO QBTS @ $21.24
+2026-04-23 22:16:23,010 INFO   Stop: $19.54 | T1: $24.43
+2026-04-23 22:16:23,010 INFO   Avaliação parcial (API indisponível). Score: 75.0
+2026-04-23 22:16:23,010 INFO 
+2026-04-23 22:16:23,010 INFO ARQQ @ $15.76
+2026-04-23 22:16:23,010 INFO   Stop: $14.5 | T1: $18.12
+2026-04-23 22:16:23,011 INFO   Avaliação parcial (API indisponível). Score: 65.0
+2026-04-23 22:16:23,011 INFO 
+2026-04-23 22:16:23,011 INFO Scan + Decision Engine concluidos.
+2026-04-24 15:00:02,171 INFO =======================================================
+2026-04-24 15:00:02,171 INFO Scanner EP + Decision Engine a iniciar
+2026-04-24 15:00:02,171 INFO =======================================================
+2026-04-24 15:00:02,171 INFO Data: 2026-04-24
+2026-04-24 15:00:02,171 INFO Fase 1: Scanner EP...
+2026-04-24 15:00:02,171 INFO Scanner a iniciar: 54 tickers
+2026-04-24 15:00:12,923 INFO Candidatos: 6 de 54 tickers
+2026-04-24 15:00:12,933 INFO Fase 2: Decision Engine — a avaliar 6 candidatos...
+2026-04-24 15:00:12,939 INFO A analisar catalisadores de 6 candidatos...
+2026-04-24 15:00:12,939 INFO A analisar catalisador: IONQ
+2026-04-24 15:00:43,010 ERROR Erro ao analisar catalisador de IONQ: HTTPSConnectionPool(host='api.anthropic.com', port=443): Read timed out. (read timeout=30)
+2026-04-24 15:00:43,010 INFO 🟡 IONQ — Outro | Qualidade: MEDIUM (50.0)
+2026-04-24 15:00:43,010 INFO A analisar catalisador: QBTS
+2026-04-24 15:01:09,190 INFO 🔴 QBTS — Top Sector | Qualidade: LOW (15.0)
+2026-04-24 15:01:09,190 INFO A analisar catalisador: NVTS
+2026-04-24 15:01:09,851 ERROR Erro ao analisar catalisador de NVTS: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-24 15:01:09,852 INFO 🟡 NVTS — Outro | Qualidade: MEDIUM (50.0)
+2026-04-24 15:01:09,852 INFO A analisar catalisador: ARQQ
+2026-04-24 15:01:10,159 ERROR Erro ao analisar catalisador de ARQQ: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-24 15:01:10,159 INFO 🟡 ARQQ — Outro | Qualidade: MEDIUM (50.0)
+2026-04-24 15:01:10,159 INFO A analisar catalisador: HIMS
+2026-04-24 15:01:10,973 ERROR Erro ao analisar catalisador de HIMS: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-24 15:01:10,974 INFO 🟡 HIMS — Outro | Qualidade: MEDIUM (50.0)
+2026-04-24 15:01:10,974 INFO A analisar catalisador: QUBT
+2026-04-24 15:01:11,401 ERROR Erro ao analisar catalisador de QUBT: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-24 15:01:11,401 INFO 🟡 QUBT — Outro | Qualidade: MEDIUM (50.0)
+2026-04-24 15:01:11,405 ERROR Erro ao avaliar IONQ: table decisions has no column named catalyst_type
+2026-04-24 15:01:11,408 ERROR Erro ao avaliar QBTS: table decisions has no column named catalyst_type
+2026-04-24 15:01:11,410 ERROR Erro ao avaliar NVTS: table decisions has no column named catalyst_type
+2026-04-24 15:01:12,640 ERROR Erro API specialist: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-24 15:01:12,642 ERROR Erro ao avaliar ARQQ: table decisions has no column named catalyst_type
+2026-04-24 15:01:13,058 ERROR Erro API specialist: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-24 15:01:13,060 ERROR Erro ao avaliar HIMS: table decisions has no column named catalyst_type
+2026-04-24 15:01:13,406 ERROR Erro API specialist: 429 Client Error: Too Many Requests for url: https://api.anthropic.com/v1/messages
+2026-04-24 15:01:13,407 ERROR Erro ao avaliar QUBT: table decisions has no column named catalyst_type
+2026-04-24 15:01:13,408 INFO 
+2026-04-24 15:01:13,408 INFO ── DECISÕES ──────────────────────────────────
+2026-04-24 15:01:13,408 INFO 🔴 IONQ → SKIP | Confiança: 90.0% | R/R: 1.88
+2026-04-24 15:01:13,408 INFO 🔴 NVTS → SKIP | Confiança: 90.0% | R/R: 1.87
+2026-04-24 15:01:13,408 INFO 🔴 QBTS → SKIP | Confiança: 80.0% | R/R: 1.87
+2026-04-24 15:01:13,408 INFO 🟢 ARQQ → ENTER | Confiança: 49.0% | R/R: 1.87
+2026-04-24 15:01:13,408 INFO 🟢 HIMS → ENTER | Confiança: 49.0% | R/R: 1.87
+2026-04-24 15:01:13,408 INFO 🟡 QUBT → WATCH | Confiança: 45.0% | R/R: 1.88
+2026-04-24 15:01:13,408 INFO 
+2026-04-24 15:01:13,408 INFO ENTRAR (2): ARQQ, HIMS
+2026-04-24 15:01:13,408 INFO AGUARDAR (1): QUBT
+2026-04-24 15:01:13,408 INFO SALTAR (3): IONQ, NVTS, QBTS
+2026-04-24 15:01:13,408 INFO 
+2026-04-24 15:01:13,408 INFO ── TOP RECOMENDAÇÕES ─────────────────────────
+2026-04-24 15:01:13,409 INFO 
+2026-04-24 15:01:13,409 INFO ARQQ @ $14.45
+2026-04-24 15:01:13,409 INFO   Stop: $13.29 | T1: $16.62
+2026-04-24 15:01:13,409 INFO   Avaliação parcial (API indisponível). Score: 65.0
+2026-04-24 15:01:13,409 INFO 
+2026-04-24 15:01:13,409 INFO HIMS @ $28.15
+2026-04-24 15:01:13,409 INFO   Stop: $25.9 | T1: $32.37
+2026-04-24 15:01:13,409 INFO   Avaliação parcial (API indisponível). Score: 65.0
+2026-04-24 15:01:13,409 INFO 
+2026-04-24 15:01:13,409 INFO Scan + Decision Engine concluidos.
