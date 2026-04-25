@@ -23,11 +23,12 @@ def _load_ep_knowledge() -> dict:
 class EpisodicPivotStrategy(BaseStrategy):
     name        = "Episodic Pivot"
     description = "Gap + volume explosivo num catalisador transformador (Pradeep Bonde)"
-    version     = "2.0"
+    version     = "2.1"
 
     # Critérios mínimos (alinhados com Pradeep)
     MIN_GAP_PCT      = 8.0    # Pradeep usa 8% — subimos de 5%
     MIN_VOLUME_RATIO = 3.0    # Pradeep usa 3x média 100 dias — subimos de 2.5x
+    MAX_VOLUME_RATIO = 15.0   # Cap — acima de 15x tende a reverter (validado em backtest)
     MIN_PRICE        = 1.0    # Pradeep usa $1 — baixamos de $5
     MIN_VOLUME_ABS   = 300000 # Volume absoluto mínimo (Pradeep)
 
@@ -64,6 +65,10 @@ class EpisodicPivotStrategy(BaseStrategy):
 
         # Volume absoluto mínimo
         if vol_day < self.MIN_VOLUME_ABS:
+            return False
+
+        # Cap de volume ratio — acima de 15x tende a reverter (validado em backtest)
+        if avg_vol > 0 and vol_day / avg_vol > self.MAX_VOLUME_RATIO:
             return False
 
         return True
@@ -128,16 +133,22 @@ class EpisodicPivotStrategy(BaseStrategy):
         if len(df) < 65:
             return score
 
-        # 1. Sem rally nos últimos 65 dias antes do EP
+        # 1. Sem rally mas também sem colapso nos últimos 65 dias
         lookback_prices = df["close"].iloc[-66:-1]
-        max_price_65d   = float(lookback_prices.max())
-        current_price   = float(df.iloc[-1]["close"])
-        if max_price_65d > 0:
-            max_gain = (max_price_65d - float(lookback_prices.iloc[0])) / float(lookback_prices.iloc[0]) * 100
-            if max_gain < 10:
-                score += 15  # preço estava flat/down nos últimos 65 dias
-            elif max_gain < 20:
-                score += 8
+        first_price = float(lookback_prices.iloc[0])
+        max_price   = float(lookback_prices.max())
+        min_price   = float(lookback_prices.min())
+
+        if first_price > 0:
+            max_gain = (max_price - first_price) / first_price * 100
+            max_loss = (min_price - first_price) / first_price * 100
+
+            if -10 <= max_gain <= 10:
+                score += 15   # flat — neglect genuíno
+            elif 10 < max_gain <= 20:
+                score += 8    # subiu um pouco — aceitável
+            elif max_loss < -30:
+                score -= 10   # colapso estrutural — penalizar
 
         # 2. Volume baixo nos últimos 20 dias (antes do EP)
         avg_vol_recent = float(df["volume"].iloc[-21:-1].mean())
@@ -164,11 +175,10 @@ class EpisodicPivotStrategy(BaseStrategy):
                          vol_ratio: float, neglect_score: float = 0) -> float:
         score = 0.0
 
-        # Gap (0-25 pontos) — escala Pradeep
-        if gap_pct >= 20:    score += 25
-        elif gap_pct >= 15:  score += 20
-        elif gap_pct >= 10:  score += 15
-        elif gap_pct >= 8:   score += 10
+        # Gap (0-25 pontos) — sweet spot 10-15% (validado em backtest)
+        if 10 <= gap_pct < 15:   score += 25   # sweet spot
+        elif gap_pct >= 15:       score += 15   # grande mas menos fiável
+        elif gap_pct >= 8:        score += 10   # mínimo aceitável
 
         # Volume (0-25 pontos) — escala Pradeep (10x = explosivo)
         if vol_ratio >= 10:  score += 25
