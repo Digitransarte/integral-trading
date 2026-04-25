@@ -28,8 +28,15 @@ page = st.sidebar.radio(
     label_visibility="collapsed",
 )
 
+page = st.sidebar.radio(
+    "",
+    ["Dashboard", "Scanner", "Posicoes", "Especialistas",
+     "Automacao", "Aprendizagem", "Backtest", "Historico", "Tuning"],
+    label_visibility="collapsed",
+)
+
 st.sidebar.markdown("---")
-st.sidebar.caption("v0.7.0 — paper trading")
+st.sidebar.caption("v0.8.0 — paper trading")
 
 if page == "Dashboard":
     st.title("◈ Integral Trading")
@@ -107,4 +114,8 @@ elif page == "Backtest":
 
 elif page == "Historico":
     from pages.history import render
+    render()
+
+elif page == "Tuning":
+    from pages.tuning import render
     render()
