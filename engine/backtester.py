@@ -1,9 +1,8 @@
-"""Integral Trading — Backtester v2.0
-Regista métricas alinhadas com o knowledge JSON:
-- Win rate por janela de entrada (Prime/Open/Late)
-- Win rate por volume ratio
-- Win rate por neglect score
-- Win rate por força do candle
+"""Integral Trading — Backtester v2.1
+Modos de entrada configuráveis:
+- next_day_open: open do dia seguinte ao EP (original)
+- ep_close: fecho do dia do EP (mais próximo do método Pradeep)
+- next_day_filtered: open do dia seguinte, só se ≤ MAX_CHASE_PCT do open do EP
 """
 import json
 import os
@@ -36,17 +35,28 @@ class BacktestConfig:
     initial_capital: float = 10_000.0
     commission_pct: float = 0.001
     max_concurrent_positions: int = 5
-    next_day_execution: bool = True
+    next_day_execution: bool = True  # mantido para compatibilidade
+
+    # Modo de entrada:
+    # "next_day_open"     — open do dia seguinte (original)
+    # "ep_close"          — fecho do dia do EP
+    # "next_day_filtered" — open do dia seguinte, só se não perseguiu demasiado
+    entry_mode: str = "next_day_open"
+
+    # Só para entry_mode="next_day_filtered":
+    # máximo de valorização aceite desde o open do EP até ao open do dia seguinte
+    max_chase_pct: float = 3.0
 
 
 @dataclass
 class EnrichedBacktestResult(BacktestResult):
     """BacktestResult com métricas adicionais do knowledge JSON."""
-    vol_ratio:     float = 0.0
-    neglect_score: float = 0.0
-    gap_pct:       float = 0.0
-    entry_window:  str   = "UNKNOWN"  # PRIME / OPEN / LATE
-    candle_strength: float = 0.0      # 0-1 (close vs range do dia)
+    vol_ratio:       float = 0.0
+    neglect_score:   float = 0.0
+    gap_pct:         float = 0.0
+    entry_window:    str   = "UNKNOWN"
+    candle_strength: float = 0.0
+    entry_mode:      str   = ""
 
 
 @dataclass
@@ -106,8 +116,6 @@ class BacktestSummary:
         self.max_drawdown_pct = max_dd * 100
 
     def _build_breakdown(self, trades):
-        """Constrói breakdown por dimensões do knowledge JSON."""
-
         def stats(group):
             if not group:
                 return {"trades": 0, "win_rate": 0, "avg_pnl": 0, "profit_factor": 0}
@@ -126,33 +134,24 @@ class BacktestSummary:
         if not enriched:
             return
 
-        # 1. Por janela de entrada
         self.breakdown["entry_window"] = {
             w: stats([t for t in enriched if t.entry_window == w])
             for w in ["PRIME", "OPEN", "LATE"]
         }
-
-        # 2. Por volume ratio
         self.breakdown["volume_ratio"] = {
-            "< 5x":   stats([t for t in enriched if t.vol_ratio < 5]),
-            "5-10x":  stats([t for t in enriched if 5 <= t.vol_ratio < 10]),
-            "> 10x":  stats([t for t in enriched if t.vol_ratio >= 10]),
+            "< 5x":  stats([t for t in enriched if t.vol_ratio < 5]),
+            "5-10x": stats([t for t in enriched if 5 <= t.vol_ratio < 10]),
+            "> 10x": stats([t for t in enriched if t.vol_ratio >= 10]),
         }
-
-        # 3. Por neglect
         self.breakdown["neglect"] = {
-            "com neglect (>= 20)":  stats([t for t in enriched if t.neglect_score >= 20]),
-            "sem neglect (< 20)":   stats([t for t in enriched if t.neglect_score < 20]),
+            "com neglect (>= 20)": stats([t for t in enriched if t.neglect_score >= 20]),
+            "sem neglect (< 20)":  stats([t for t in enriched if t.neglect_score < 20]),
         }
-
-        # 4. Por gap
         self.breakdown["gap"] = {
             "8-10%":  stats([t for t in enriched if 8 <= t.gap_pct < 10]),
             "10-15%": stats([t for t in enriched if 10 <= t.gap_pct < 15]),
             "> 15%":  stats([t for t in enriched if t.gap_pct >= 15]),
         }
-
-        # 5. Por força do candle
         self.breakdown["candle_strength"] = {
             "forte (>= 0.7)": stats([t for t in enriched if t.candle_strength >= 0.7]),
             "fraco (< 0.7)":  stats([t for t in enriched if t.candle_strength < 0.7]),
@@ -161,6 +160,7 @@ class BacktestSummary:
     def to_dict(self):
         return {
             "strategy":         self.strategy_name,
+            "entry_mode":       self.config.entry_mode,
             "total_trades":     self.total_trades,
             "win_rate":         round(self.win_rate * 100, 1),
             "avg_win_pct":      round(self.avg_win_pct, 2),
@@ -176,19 +176,18 @@ class BacktestSummary:
 
 class Backtester:
     def __init__(self, feed: DataFeed, strategy: BaseStrategy):
-        self.feed      = feed
-        self.strategy  = strategy
+        self.feed       = feed
+        self.strategy   = strategy
         self._knowledge = _load_knowledge()
 
     def run(self, config: BacktestConfig) -> BacktestSummary:
-        logger.info(f"Backtest: {self.strategy.name} | {len(config.tickers)} tickers")
+        logger.info(f"Backtest: {self.strategy.name} | {len(config.tickers)} tickers | mode: {config.entry_mode}")
         all_trades, errors = [], []
 
         for ticker in config.tickers:
             try:
                 trades = self._run_ticker(ticker, config)
                 all_trades.extend(trades)
-                logger.debug(f"{ticker}: {len(trades)} trades")
             except Exception as e:
                 msg = f"{ticker}: {str(e)}"
                 errors.append(msg)
@@ -203,8 +202,7 @@ class Backtester:
 
         logger.info(
             f"Completo: {summary.total_trades} trades | "
-            f"Win: {summary.win_rate:.1%} | PF: {summary.profit_factor:.2f} | "
-            f"Erros: {len(errors)}"
+            f"Win: {summary.win_rate:.1%} | PF: {summary.profit_factor:.2f}"
         )
         return summary
 
@@ -235,15 +233,12 @@ class Backtester:
                     pnl = (current_price - position.entry_price) / position.entry_price * 100
                     pnl -= config.commission_pct * 100 * 2
 
-                    # Calcular métricas enriquecidas
                     meta          = position.metadata if hasattr(position, "metadata") else {}
                     vol_ratio     = meta.get("vol_ratio", 0)
                     neglect_score = meta.get("neglect_score", 0)
                     gap_pct       = meta.get("gap_pct", 0)
-                    entry_window  = self._classify_window(
-                        meta.get("days_since_gap", 0)
-                    )
-                    # Força do candle no dia do sinal
+                    entry_window  = self._classify_window(meta.get("days_since_gap", 0))
+
                     signal_bar = dfsf.iloc[-1]
                     rng = float(signal_bar["high"]) - float(signal_bar["low"])
                     candle_strength = (
@@ -266,6 +261,7 @@ class Backtester:
                         gap_pct=gap_pct,
                         entry_window=entry_window,
                         candle_strength=candle_strength,
+                        entry_mode=config.entry_mode,
                     ))
                     position = None
                 continue
@@ -277,11 +273,35 @@ class Backtester:
             if signal is None or signal.score < self.strategy.min_score:
                 continue
 
-            if config.next_day_execution and i + 1 < len(df):
-                signal.entry_price = float(df.iloc[i+1]["open"])
-                signal.signal_date = df.index[i+1].to_pydatetime()
-            else:
+            ep_bar = df.iloc[i]
+
+            # ── Determinar preço e data de entrada ──────────────────────────
+            if config.entry_mode == "ep_close":
+                # Entrar no fecho do dia do EP
+                signal.entry_price = float(ep_bar["close"])
                 signal.signal_date = date.to_pydatetime()
+
+            elif config.entry_mode == "next_day_filtered":
+                # Entrar no open do dia seguinte, só se não perseguiu demasiado
+                if i + 1 >= len(df):
+                    continue
+                next_open = float(df.iloc[i+1]["open"])
+                ep_open   = float(ep_bar["open"])
+                if ep_open > 0:
+                    chase_pct = (next_open - ep_open) / ep_open * 100
+                    if chase_pct > config.max_chase_pct:
+                        continue  # já correu demasiado — não entrar
+                signal.entry_price = next_open
+                signal.signal_date = df.index[i+1].to_pydatetime()
+
+            else:
+                # next_day_open — comportamento original
+                if i + 1 < len(df):
+                    signal.entry_price = float(df.iloc[i+1]["open"])
+                    signal.signal_date = df.index[i+1].to_pydatetime()
+                else:
+                    signal.signal_date = date.to_pydatetime()
+
             position = signal
 
         # Fechar posição aberta no fim do período
@@ -304,14 +324,12 @@ class Backtester:
                 gap_pct=meta.get("gap_pct", 0),
                 entry_window="UNKNOWN",
                 candle_strength=0.5,
+                entry_mode=config.entry_mode,
             ))
 
         return trades
 
     def _classify_window(self, days: int) -> str:
-        if days <= 1:
-            return "PRIME"
-        elif days <= 5:
-            return "OPEN"
-        else:
-            return "LATE"
+        if days <= 1:   return "PRIME"
+        elif days <= 5: return "OPEN"
+        else:           return "LATE"

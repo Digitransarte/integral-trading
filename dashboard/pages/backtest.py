@@ -86,6 +86,17 @@ def render():
             capital = st.number_input(
                 "cap", value=10000, min_value=100, step=1000, label_visibility="collapsed",
             )
+            st.markdown("**Modo de Entrada**")
+            entry_mode = st.selectbox(
+                "em",
+                options=["next_day_open", "ep_close", "next_day_filtered"],
+                format_func=lambda x: {
+                    "next_day_open":     "Open do dia seguinte (original)",
+                    "ep_close":          "Fecho do dia do EP (Pradeep)",
+                    "next_day_filtered": "Open filtrado (max chase 3%)",
+                }[x],
+                label_visibility="collapsed",
+            )
             next_day    = st.checkbox("Execucao no dia seguinte (mais realista)", value=True)
             show_trades = st.checkbox("Mostrar lista de trades", value=True)
             save_to_db  = st.checkbox("Guardar resultado no historico", value=True)
@@ -112,13 +123,13 @@ def render():
         if api_ok:
             result = _run_via_api("ep", tickers, str(date_start), str(date_end), float(capital), next_day)
         else:
-            result = _run_direct(tickers, date_start, date_end, float(capital), next_day, save_to_db)
+            result = _run_direct(tickers, date_start, date_end, float(capital), next_day, save_to_db, entry_mode)
 
     if result:
         _show_results(result, show_trades)
 
 
-def _run_direct(tickers, d1, d2, capital, next_day, save):
+def _run_direct(tickers, d1, d2, capital, next_day, save, entry_mode="next_day_open"):
     try:
         feed = DataFeed(polygon_key=POLYGON_API_KEY)
         config = BacktestConfig(
@@ -127,6 +138,7 @@ def _run_direct(tickers, d1, d2, capital, next_day, save):
             end_date=datetime.combine(d2, datetime.min.time()),
             initial_capital=capital,
             next_day_execution=next_day,
+            entry_mode=entry_mode,
         )
         summary = Backtester(feed, EpisodicPivotStrategy()).run(config)
 
@@ -206,6 +218,15 @@ def _show_results(data, show_trades):
 
     st.markdown("---")
     st.subheader("Resultados")
+
+    # Mostrar modo de entrada usado
+    entry_mode_labels = {
+        "next_day_open":     "Open do dia seguinte",
+        "ep_close":          "Fecho do dia do EP",
+        "next_day_filtered": "Open filtrado (max chase 3%)",
+    }
+    em = s.get("entry_mode", "next_day_open")
+    st.caption("Modo de entrada: **" + entry_mode_labels.get(em, em) + "**")
 
     if not s.get("total_trades"):
         st.warning("Nenhum trade gerado. Tenta um periodo mais longo ou universo diferente.")
