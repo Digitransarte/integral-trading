@@ -229,21 +229,38 @@
     }
   ],
 
-  "lessons_learned": [],
-
-  "sector_notes": {
-    "description": "Sectores com momentum estrutural produzem os melhores EPs",
-    "historical_winners": [
-      "AI / Semicondutores",
-      "Biotech em fase de aprovação",
-      "Energia em ciclo de alta",
-      "Cloud / SaaS em fase de aceleração"
-    ],
-    "avoid": [
-      "Sectores em declínio estrutural",
-      "Sectores com excesso de cobertura mediática (surpresa já precificada)"
-    ]
+  "lessons_learned": [
+  {
+    "date": "2026-04-25",
+    "source": "Backtest 49 trades — Universo principal, 1 ano",
+    "lesson": "Volume > 15x tende a reverter rapidamente. Win rate 21%, PF 0.35. Cap de 15x aplicado na v2.1.",
+    "impact": "MAX_VOLUME_RATIO = 15.0 adicionado ao scanner"
   },
+  {
+    "date": "2026-04-25",
+    "source": "Backtest 49 trades — Universo principal, 1 ano",
+    "lesson": "Gap sweet spot é 10-15%, não > 20%. Gaps muito grandes têm WR 38% e avg -2.1% vs WR 44% e avg +3.2% para 10-15%.",
+    "impact": "Scoring de gap revisto — 10-15% recebe pontuação máxima"
+  },
+  {
+    "date": "2026-04-25",
+    "source": "Backtest 49 trades — Universo principal, 1 ano",
+    "lesson": "Neglect score alto (>=20) teve pior performance (WR 30%) que neglect baixo (WR 50%). Causa provável: o cálculo anterior não distinguia 'negligenciada' de 'em colapso estrutural'. Corrigido na v2.1.",
+    "impact": "Penalização de -10pts para acções com queda > 30% em 65 dias"
+  },
+  {
+    "date": "2026-04-25",
+    "source": "Backtest 49 trades — Universo principal, 1 ano",
+    "lesson": "MNTS apareceu 5x nos trades — 3 perdas grandes (-43%, -29%, -14%) e 1 ganho (+33%). Tickers com vol_ratio > 50x são altamente especulativos e distorcem os resultados.",
+    "impact": "Cap de volume aplicado. Considerar lista de exclusão para tickers problemáticos."
+  },
+  {
+    "date": "2026-04-25",
+    "source": "Backtest 49 trades — Universo principal, 1 ano",
+    "lesson": "Volume 5-10x é o sweet spot real: WR 45%, PF 1.76. Confirma os critérios do Pradeep de 3-10x como zona de qualidade.",
+    "impact": "Scoring de volume mantido, mas cap de 15x filtra os extremos"
+  }
+]
 
   "backtesting_guidance": {
     "minimum_trades_for_significance": 30,
