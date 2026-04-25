@@ -41,7 +41,7 @@ class BacktestConfig:
     # "next_day_open"     — open do dia seguinte (original)
     # "ep_close"          — fecho do dia do EP
     # "next_day_filtered" — open do dia seguinte, só se não perseguiu demasiado
-    entry_mode: str = "next_day_open"
+    entry_mode: str = "ep_close"
 
     # Só para entry_mode="next_day_filtered":
     # máximo de valorização aceite desde o open do EP até ao open do dia seguinte

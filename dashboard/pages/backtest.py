@@ -89,7 +89,7 @@ def render():
             st.markdown("**Modo de Entrada**")
             entry_mode = st.selectbox(
                 "em",
-                options=["next_day_open", "ep_close", "next_day_filtered"],
+                options=["ep_close", "next_day_open", "next_day_filtered"],
                 format_func=lambda x: {
                     "next_day_open":     "Open do dia seguinte (original)",
                     "ep_close":          "Fecho do dia do EP (Pradeep)",

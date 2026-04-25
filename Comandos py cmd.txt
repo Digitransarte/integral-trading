@@ -15,8 +15,8 @@ git push
 
 No servidor — para actualizar:
 
-bashcd /opt/integral-trading
-git pull
+cd /opt/integral-trading
+git pull origin main
 systemctl restart integral-trading
 
 
