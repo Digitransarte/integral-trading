@@ -57,3 +57,21 @@
 2026-04-23 22:50:38,873 INFO Estatísticas actualizadas.
 2026-04-23 22:50:38,873 INFO 
 2026-04-23 22:50:38,873 INFO Actualização diária concluída.
+2026-04-24 22:30:01,461 INFO =======================================================
+2026-04-24 22:30:01,461 INFO Actualização diária a iniciar
+2026-04-24 22:30:01,461 INFO =======================================================
+2026-04-24 22:30:01,461 INFO Data: 2026-04-24
+2026-04-24 22:30:01,473 INFO Posições abertas: 2
+2026-04-24 22:30:02,014 INFO Actualizadas: 2
+2026-04-24 22:30:02,014 INFO Stops: 0
+2026-04-24 22:30:02,014 INFO Targets: 0
+2026-04-24 22:30:02,019 INFO 
+2026-04-24 22:30:02,019 INFO Fase 2: Análise de trades fechados...
+2026-04-24 22:30:02,024 INFO 0 trades para analisar.
+2026-04-24 22:30:02,024 INFO Sem novos trades para analisar.
+2026-04-24 22:30:02,024 INFO 
+2026-04-24 22:30:02,024 INFO Fase 3: Actualizar estatísticas de aprendizagem...
+2026-04-24 22:30:02,049 INFO Estatísticas actualizadas: 909 trades | Win rate global: 47.3%
+2026-04-24 22:30:02,049 INFO Estatísticas actualizadas.
+2026-04-24 22:30:02,049 INFO 
+2026-04-24 22:30:02,049 INFO Actualização diária concluída.

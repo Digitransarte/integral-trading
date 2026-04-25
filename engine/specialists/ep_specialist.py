@@ -1,12 +1,116 @@
 """
 Integral Trading — Especialista Episodic Pivot
 ================================================
-Especialista com conhecimento profundo do método EP do Pradeep Bonde.
-Baseado nas fontes primárias: Stockbee blog, transcrições de conferências,
-e experiência acumulada dos backtests.
+Especialista com conhecimento carregado dinamicamente do ficheiro
+knowledge/ep_strategy.json — editável sem tocar em código.
 """
 
+import json
+import os
 from engine.specialist import BaseSpecialist
+
+
+def _load_knowledge() -> dict:
+    """Carrega o ficheiro de conhecimento EP."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    path = os.path.join(base_dir, "knowledge", "ep_strategy.json")
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def _build_system_prompt(k: dict) -> str:
+    """Constrói o system prompt a partir do knowledge JSON."""
+
+    philosophy = k.get("philosophy", {})
+    green_flags = k.get("green_flags", [])
+    red_flags = k.get("red_flags", [])
+    catalyst_types = k.get("catalyst_types", {})
+    entry_rules = k.get("entry_rules", {})
+    exit_rules = k.get("exit_rules", {})
+    neglect = k.get("neglect_criteria", {})
+    lessons = k.get("lessons_learned", [])
+    knowledge_base = k.get("knowledge_base", [])
+
+    green_str = "\n".join(f"  ✅ {f}" for f in green_flags)
+    red_str   = "\n".join(f"  ❌ {f}" for f in red_flags)
+
+    tier1 = "\n".join(f"  • {c}" for c in catalyst_types.get("tier_1_forte", []))
+    tier3 = "\n".join(f"  • {c}" for c in catalyst_types.get("tier_3_fraco", []))
+
+    lessons_str = ""
+    if lessons:
+        lessons_str = "\n## Lições aprendidas dos nossos trades\n"
+        for l in lessons[-10:]:  # últimas 10
+            lessons_str += f"  • [{l.get('trade','')}] {l.get('lesson','')} ({l.get('date','')})\n"
+
+    kb_str = ""
+    if knowledge_base:
+        kb_str = "\n## Base de conhecimento (fontes primárias)\n"
+        for kb in knowledge_base:
+            kb_str += f"  • [{kb.get('source','')}] {kb.get('insight','')}\n"
+
+    return f"""És o especialista em Episodic Pivots (EP) do sistema Integral Trading.
+
+## A tua identidade
+
+O teu conhecimento vem directamente das fontes primárias do Pradeep Bonde (Stockbee) — o criador do método EP — complementado pela experiência real dos backtests e forward tests feitos neste sistema.
+
+Tens dois modos de operação que combinas naturalmente:
+
+**Modo Professor:** Explicas o método EP em profundidade. Usas as fontes primárias como referência. Ajudas a desenvolver o entendimento da estratégia.
+
+**Modo Analista:** Quando vês resultados de backtests ou trades reais, analisas com rigor o que está a funcionar e o que não está. Avalias candidatos EP usando os critérios abaixo.
+
+## Filosofia central
+
+{philosophy.get('summary', '')}
+
+**Insight core:** {philosophy.get('core_insight', '')}
+
+**Tipos de EP:**
+- Growth EP: {philosophy.get('two_types', {}).get('growth_ep', '')}
+- Turnaround EP: {philosophy.get('two_types', {}).get('turnaround_ep', '')}
+- Young EP: {philosophy.get('young_eps', '')}
+
+## Neglect — conceito central
+
+{neglect.get('description', '')}
+
+Sinais mensuráveis:
+- Sem rally nos últimos {neglect.get('measurable_signals', {}).get('sem_rally_dias', 65)} dias
+- Menos de {neglect.get('measurable_signals', {}).get('fundos_max', 30)} fundos em carteira
+- Float ideal < {neglect.get('measurable_signals', {}).get('float_max_ideal', 25000000):,} acções
+- Volume baixo por período prolongado
+
+## Green flags (sinal de EP de qualidade)
+{green_str}
+
+## Red flags (eliminar o candidato)
+{red_str}
+
+## Catalisadores — Tier 1 (fortes, prioridade máxima)
+{tier1}
+
+## Catalisadores — Tier 3 (fracos, evitar)
+{tier3}
+
+## Regras de entrada
+- Timing: {entry_rules.get('timing', '')}
+- Stop loss: {exit_rules.get('stop_loss', {}).get('rule', '')}
+- Take profit: {exit_rules.get('take_profit', {}).get('method', '')}
+
+{kb_str}
+{lessons_str}
+
+## Tom e estilo
+- Directo e prático — foco em acção e implementação
+- Quando avalias um candidato, lista explicitamente os green flags e red flags presentes
+- Quando não tens certeza, diz-o claramente
+- Responde em português europeu
+- Sê honesto sobre o que falhou nos trades reais
+"""
 
 
 class EPSpecialist(BaseSpecialist):
@@ -14,185 +118,84 @@ class EPSpecialist(BaseSpecialist):
     name          = "Episodic Pivot"
     strategy_name = "ep"
 
-    system_prompt = """
-És o especialista em Episodic Pivots (EP) do sistema Integral Trading.
+    def __init__(self, *args, **kwargs):
+        # Carregar knowledge do JSON
+        self._knowledge_data = _load_knowledge()
+        # Construir system prompt dinâmico
+        self.system_prompt = _build_system_prompt(self._knowledge_data)
+        super().__init__(*args, **kwargs)
 
-## A tua identidade
+    @property
+    def knowledge(self) -> dict:
+        """Acesso directo ao knowledge JSON para uso interno."""
+        return self._knowledge_data
 
-O teu conhecimento vem directamente das fontes primárias do Pradeep Bonde 
-(Stockbee) — o criador do método EP — complementado pela experiência real 
-dos backtests e forward tests feitos neste sistema.
+    def evaluate_candidate(self, ticker: str, data: dict) -> dict:
+        """
+        Avalia um candidato EP contra os critérios do knowledge JSON.
+        Retorna score qualitativo + lista de green/red flags presentes.
+        """
+        green_flags_found = []
+        red_flags_found   = []
+        score_bonus       = 0
 
-Tens dois modos de operação que combinas naturalmente:
+        float_shares = data.get("float_shares", None)
+        volume_ratio = data.get("volume_ratio", 0)
+        gap_pct      = data.get("gap_pct", 0)
+        catalyst     = data.get("catalyst", "").lower()
+        days_since   = data.get("days_since_gap", 0)
+        fund_count   = data.get("fund_count", None)
 
-**Modo Professor:** Explicas o método EP em profundidade. Quando alguém tem 
-dúvidas sobre o método, explicas os conceitos com clareza, usas exemplos reais, 
-e ajudas a desenvolver o entendimento da estratégia.
+        # Avaliar float
+        if float_shares is not None:
+            if float_shares < 10_000_000:
+                green_flags_found.append("Float < 10M — movimento explosivo possível")
+                score_bonus += 20
+            elif float_shares < 25_000_000:
+                green_flags_found.append("Float < 25M — ideal")
+                score_bonus += 15
+            elif float_shares > 100_000_000:
+                red_flags_found.append("Float > 100M — tendência para pullbacks")
+                score_bonus -= 15
 
-**Modo Analista:** Quando vês resultados de backtests ou trades reais, analisas 
-com rigor o que está a funcionar e o que não está. Sugeres ajustes específicos 
-e mensuráveis.
+        # Avaliar volume
+        if volume_ratio >= 10:
+            green_flags_found.append(f"Volume {volume_ratio:.1f}x — sinal de movimento grande")
+            score_bonus += 20
+        elif volume_ratio >= 5:
+            green_flags_found.append(f"Volume {volume_ratio:.1f}x — bom")
+            score_bonus += 10
+        elif volume_ratio < 3:
+            red_flags_found.append(f"Volume apenas {volume_ratio:.1f}x — abaixo do mínimo Pradeep (3x)")
+            score_bonus -= 10
 
-## A tua filosofia
+        # Avaliar janela de entrada
+        if days_since <= 1:
+            green_flags_found.append("Janela PRIME — entrada ideal")
+            score_bonus += 10
+        elif days_since > 10:
+            red_flags_found.append(f"EP há {days_since} dias — fora da janela de entrada")
+            score_bonus -= 20
 
-O EP baseia-se no fenómeno PEAD (Post Earnings Announcement Drift), documentado 
-cientificamente por Ball e Brown em 1968: stocks no decil superior de surpresa 
-de earnings continuam a subir nas semanas seguintes.
+        # Avaliar catalisador (simples, sem web search)
+        tier1_keywords = ["earnings", "drug approval", "buyout", "merger", "contract", "ipo"]
+        tier3_keywords = ["dividend", "media", "analyst upgrade", "downgrade", "junk"]
+        if any(k in catalyst for k in tier1_keywords):
+            green_flags_found.append("Catalisador Tier 1 detectado")
+            score_bonus += 15
+        elif any(k in catalyst for k in tier3_keywords):
+            red_flags_found.append("Catalisador Tier 3 — fraco")
+            score_bonus -= 15
 
-O princípio central: quando uma empresa surpreende o mercado com um catalisador 
-INESPERADO e MATERIAL, o mercado demora semanas a fazer o repricing completo. 
-Esse drift é onde está o dinheiro.
+        # Avaliar fundos
+        if fund_count is not None and fund_count < 30:
+            green_flags_found.append(f"Apenas {fund_count} fundos em carteira — neglect confirmado")
+            score_bonus += 10
 
-O conceito de "Neglect" é fundamental: as melhores oportunidades EP são em 
-stocks que estavam fora do radar — sem cobertura de analistas, com float baixo, 
-negligenciadas pelo mercado. O efeito surpresa é máximo.
-
-## Tom e estilo
-
-- Directo e prático — foco em acção e implementação
-- Usa exemplos concretos quando possível
-- Quando não tens certeza, diz-o claramente
-- Responde em português europeu
-- Mantém respostas focadas — sem floreados desnecessários
-- Quando analisas trades, sê honesto sobre o que falhou
-"""
-
-    knowledge = {
-
-        "fundamento_teorico": {
-            "base": "PEAD — Post Earnings Announcement Drift (Ball & Brown, 1968)",
-            "principio": "Stocks com surpresa positiva de earnings continuam a valorizar nas semanas seguintes",
-            "dois_tipos_oportunidade": [
-                "Movimento imediato e grande — trade de curto prazo no dia ou dias seguintes",
-                "Rally que começa no dia do earnings e continua 3-4 trimestres"
-            ],
-            "conceito_neglect": "Stock estava fora do radar antes do catalisador — amplifica o efeito surpresa e o drift"
-        },
-
-        "criterios_scan_originais": {
-            "variacao_diaria_pct":    "≥ 8%",
-            "volume_ratio_media100":  "≥ 300% (3x) da média de 100 dias",
-            "volume_minimo_absoluto": "≥ 300.000 acções",
-            "preco_minimo":           "> $1",
-            "formula_telechart":      "((C-C1)>=5 AND V>10000 AND C>=62.50 AND V>V1) OR (((100*(C-C1)/C1)>=8 AND V>3000 AND (100*V/AVGV100)>=300) AND C>1)"
-        },
-
-        "criterios_qualidade_float": {
-            "ideal":       "Float < 25 milhões — os melhores movimentos",
-            "muito_bom":   "Float < 10 milhões — movimentos explosivos possíveis",
-            "aceitavel":   "Float 25-100 milhões",
-            "evitar":      "Float > 100 milhões — tendência para pullbacks",
-            "nao_usar":    "Float > 500 milhões (excepto perto de mínimos históricos)"
-        },
-
-        "criterios_qualidade_volume": {
-            "ideal":    "Volume no dia do EP = 10x ou mais da média — sinal de movimento grande (100%+ em 1-2 meses)",
-            "muito_bom": "Volume = máximo histórico ou máximo de vários anos",
-            "minimo":   "3x a média de 100 dias"
-        },
-
-        "tipos_catalisadores_22": [
-            "Earnings Growth 100%+",
-            "Earnings 40%+",
-            "Earnings beats by wide margin",
-            "Earnings Other",
-            "Sales 100%+ sem earnings",
-            "IPO Breakout",
-            "Retail",
-            "Top Sector",
-            "New order/contract",
-            "Buyout/merger",
-            "New product launch",
-            "Regulatory Changes",
-            "Drug Approval",
-            "Drug/marketing Tie Up",
-            "Natural disaster/war/disease",
-            "Shortages",
-            "Rate Increase",
-            "Media Mention",
-            "Analyst upgrade/downgrade",
-            "Declares Dividend",
-            "Financial Engineering",
-            "Junk of the bottom rally"
-        ],
-
-        "entrada": {
-            "timing":    "Comprar imediatamente — pré-mercado ou abertura. Os melhores EPs foram comprados em pré-mercado.",
-            "regra":     "Se é um bom EP, não esperar — entrar imediatamente",
-            "variante_delayed": "Esperar consolidação ordeira após o gap, sem quebras de 4%+ durante o pullback"
-        },
-
-        "stop_loss": {
-            "regra":     "Mínima dos 2 dias anteriores à entrada",
-            "filosofia": "Stop apertado — se o EP é real o preço não deve regressar à mínima dos 2 dias anteriores"
-        },
-
-        "saida": {
-            "metodo":    "4 partes, target de lucro 20%+, trailing stop",
-            "regra":     "Sem price targets fixos — saídas baseadas em trailing stops",
-            "horizonte": "Poucas semanas a meses dependendo do momentum"
-        },
-
-        "variante_9_million_ep": {
-            "descricao":   "Volume surge > 9 milhões numa sessão — evolução moderna do EP clássico",
-            "vantagem":    "Mais frequente que EP clássico — 100-200 trades/ano vs 5-10 do EP puro",
-            "sugar_babies": "Stocks com EPs de 9M recorrentes — core list de swing trades de 40-50% em 3-5 dias"
-        },
-
-        "analise_qualitativa_catalisador": {
-            "perguntas_chave": [
-                "É a primeira grande aceleração de earnings?",
-                "O que causou a aceleração? É pontual ou persistente?",
-                "Representa mudança estrutural na indústria ou posição competitiva?",
-                "A surpresa já está reflectida no preço actual?",
-                "Volume muito elevado = movimento tem 'pernas'"
-            ],
-            "earnings_sem_cobertura": "Procurar aceleração 100%+ YoY e quarter-over-quarter — melhor oportunidade",
-            "earnings_com_cobertura": "Surpresas genuínas são raras — expectativas bem geridas — EPs tendem a ter pullbacks"
-        },
-
-        "processo_diario": {
-            "pre_mercado": [
-                "Correr IB scanner: volume > 50k e subida >= 2%",
-                "Analisar movers after-hours: subida > 4% em 50k volume",
-                "Verificar se há ação com neglect + game changing earnings"
-            ],
-            "durante_dia": [
-                "Correr EP scan c/c1 > 1.04 e v > 3*avgv50 várias vezes",
-                "Verificar neglect + game changing earnings"
-            ],
-            "ferramentas": [
-                "MarketSmith (earnings, float, fund holdings)",
-                "TheFlyOnTheWall (notícias)",
-                "IB scanner (top % gainers, volume > 50k)",
-                "Trade Ideas (biggest gainers + most upside momentum)"
-            ]
-        },
-
-        "o_que_funciona_no_nosso_sistema": {
-            "sectores_positivos": [
-                "Small Cap Growth (win rate ~57%, PF ~2.0)",
-                "Space & Defense (win rate ~53%, PF ~1.9)",
-                "AI & Tech (win rate ~36%, PF ~1.5)",
-                "Mid Cap Momentum (win rate ~50%, PF ~1.8)",
-                "Healthcare Devices (win rate ~64%, PF ~1.6)"
-            ],
-            "sectores_negativos": [
-                "Biotech — gaps frequentemente negativos (FDA rejections, trial failures) — win rate 24%",
-                "Crypto/Fintech — correlação com BTC, não com fundamentais — win rate 29%",
-                "Clean Energy — correlação macro/petróleo — win rate 25%"
-            ],
-            "nota_biotech": "O sistema EP puro não distingue gap positivo de gap negativo — biotech requer análise qualitativa do catalisador obrigatória"
-        },
-
-        "criterios_actuais_sistema": {
-            "min_gap_pct":      "5% (Pradeep usa 8% — podemos subir)",
-            "min_volume_ratio": "2.5x (Pradeep usa 3x da média de 100 dias)",
-            "min_price":        "$5",
-            "min_score":        "60/100",
-            "janela_entrada":   "PRIME (0-5 dias), OPEN (6-10 dias), LATE (>10 dias)",
-            "stop":             "8% abaixo da entrada (Pradeep usa mínima dos 2 dias anteriores — mais preciso)",
-            "target_1":         "15% acima da entrada",
-            "hold_max":         "20 dias"
+        return {
+            "ticker":            ticker,
+            "green_flags":       green_flags_found,
+            "red_flags":         red_flags_found,
+            "score_adjustment":  score_bonus,
+            "recommendation":    "STRONG" if score_bonus >= 30 else "VALID" if score_bonus >= 0 else "WEAK",
         }
-    }
