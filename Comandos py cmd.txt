@@ -1,0 +1,55 @@
+streamlit run trading_ep_v2.py   ← scanner diário (usa KB)
+streamlit run backtest_ep.py       ← quando quiseres testar novos parâmetros
+streamlit run knowledge_base.py    ← para ver os insights da KB
+
+
+Abrir o Servidor: ssh root@46.224.91.46
+
+O fluxo de trabalho a partir de agora é:
+No PC — quando fizeres alterações:
+
+cmdcd C:\integral-trading
+git add .
+git commit -m "descrição da alteração"
+git push
+
+No servidor — para actualizar:
+
+bashcd /opt/integral-trading
+git pull
+systemctl restart integral-trading
+
+
+Novo scanner:
+# 1. Primeiro cobre os últimos 6 meses mensalmente
+python ep_backtest_auto.py --months 6 --period monthly
+
+# 2. Depois adiciona granularidade semanal no trimestre mais recente
+python ep_backtest_auto.py --months 3 --period weekly
+
+Sim — o script aceita três granularidades:
+bash# Mensal (default) — 1 período por mês
+python ep_backtest_auto.py --months 6 --period monthly
+
+# Quinzenal — períodos de 2 semanas
+python ep_backtest_auto.py --months 6 --period biweekly
+
+# Semanal — 1 período por semana
+python ep_backtest_auto.py --months 6 --period weekly
+
+
+
+# Ver o que a KB aprendeu
+streamlit run knowledge_base.py
+
+# Scanner com KB afinada
+streamlit run trading_ep_v2_2.py
+
+# Ver resumo no terminal
+python ep_backtest_auto.py --dry-run --months 6
+
+Ebooks
+
+python 15_interface_ebooks.py
+http://localhost:5001
+

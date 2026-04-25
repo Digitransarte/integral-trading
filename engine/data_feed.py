@@ -64,6 +64,40 @@ class DataFeed:
         except Exception as e:
             logger.error("Erro get_multiple_prices: " + str(e))
         return result
+    
+    def get_daily_bars(self, tickers: list) -> dict:
+        """High, low e close do dia actual para múltiplos tickers."""
+        result = {}
+        try:
+            data = yf.download(tickers, period="2d", progress=False, auto_adjust=True)
+            if data is None or data.empty:
+                return result
+
+            if isinstance(data.columns, pd.MultiIndex):
+                for ticker in tickers:
+                    try:
+                        high  = data["High"][ticker].dropna()
+                        low   = data["Low"][ticker].dropna()
+                        close = data["Close"][ticker].dropna()
+                        if not high.empty:
+                            result[ticker] = {
+                                "high":  float(high.iloc[-1]),
+                                "low":   float(low.iloc[-1]),
+                                "close": float(close.iloc[-1]),
+                            }
+                    except Exception:
+                        continue
+            else:
+                data.columns = [str(c).lower() for c in data.columns]
+                if len(tickers) == 1 and "high" in data.columns:
+                    result[tickers[0]] = {
+                        "high":  float(data["high"].dropna().iloc[-1]),
+                        "low":   float(data["low"].dropna().iloc[-1]),
+                        "close": float(data["close"].dropna().iloc[-1]),
+                    }
+        except Exception as e:
+            logger.error("Erro get_daily_bars: " + str(e))
+        return result
 
     def _yfinance_bars(self, ticker: str, start: datetime,
                        end: datetime, interval: str) -> pd.DataFrame:
