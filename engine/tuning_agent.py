@@ -19,6 +19,7 @@ from datetime import datetime
 from pathlib import Path
 import requests
 import logging
+import time
 
 from config import ANTHROPIC_API_KEY
 
@@ -367,7 +368,7 @@ Quando corres um backtest, apresenta sempre a comparação com a versão anterio
         self._history.append({"role": "user", "content": user_message})
 
         # Loop agentic
-        max_iterations = 10
+        max_iterations = 15
         iteration      = 0
 
         while iteration < max_iterations:
@@ -393,6 +394,14 @@ Quando corres um backtest, apresenta sempre a comparação com a versão anterio
                 response.raise_for_status()
                 data = response.json()
 
+            except requests.exceptions.HTTPError as e:
+                if hasattr(e, 'response') and e.response is not None and e.response.status_code == 429:
+                    logger.warning("Rate limit atingido, aguardando 30s...")
+                    time.sleep(30)
+                    continue
+                error_msg = f"Erro na API: {str(e)}"
+                logger.error(error_msg)
+                return error_msg
             except Exception as e:
                 error_msg = f"Erro na API: {str(e)}"
                 logger.error(error_msg)
