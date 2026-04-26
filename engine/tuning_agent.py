@@ -24,8 +24,9 @@ from config import ANTHROPIC_API_KEY
 
 logger = logging.getLogger(__name__)
 
-CLAUDE_MODEL = "claude-sonnet-4-20250514"
-MAX_TOKENS   = 4000
+CLAUDE_MODEL_SMART  = "claude-sonnet-4-20250514"   # respostas finais
+CLAUDE_MODEL_FAST   = "claude-haiku-4-5-20251001"  # tool use interno
+MAX_TOKENS          = 2000
 BASE_DIR     = Path(__file__).parent.parent
 
 
@@ -381,7 +382,7 @@ Quando corres um backtest, apresenta sempre a comparação com a versão anterio
                         "anthropic-version": "2023-06-01",
                     },
                     json={
-                        "model":      CLAUDE_MODEL,
+                        "model": CLAUDE_MODEL_FAST if iteration < max_iterations else CLAUDE_MODEL_SMART,
                         "max_tokens": MAX_TOKENS,
                         "system":     self.SYSTEM_PROMPT,
                         "tools":      TOOLS,
