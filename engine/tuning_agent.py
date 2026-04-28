@@ -19,14 +19,13 @@ from datetime import datetime
 from pathlib import Path
 import requests
 import logging
-import time
 
 from config import ANTHROPIC_API_KEY
 
 logger = logging.getLogger(__name__)
 
-CLAUDE_MODEL_SMART  = "claude-sonnet-4-20250514"   # respostas finais
-CLAUDE_MODEL_FAST   = "claude-haiku-4-5-20251001"  # tool use interno
+CLAUDE_MODEL_SMART  = "claude-sonnet-4-20250514"   # respostas complexas
+CLAUDE_MODEL_FAST   = "claude-haiku-4-5-20251001"  # tool use e análise
 MAX_TOKENS          = 2000
 BASE_DIR     = Path(__file__).parent.parent
 
@@ -339,18 +338,20 @@ Tens acesso directo aos ficheiros do projecto e ao backtester. Quando o utilizad
 5. **Analisas** os resultados e sugeres próximos passos
 6. **Actualizas** o knowledge JSON com as lições aprendidas
 
+## REGRAS CRÍTICAS
+
+- Usa NO MÁXIMO 3 ferramentas por resposta — não encadees mais de 3 chamadas seguidas
+- Depois de correr um backtest, PARA e apresenta os resultados ao utilizador
+- Não corras múltiplos backtests em sequência sem mostrar resultados primeiro
+- Se precisas de mais informação, pergunta ao utilizador em vez de adivinhar
+- Responde SEMPRE em português europeu
+
 ## Princípios de afinação
 
-- Baseia todas as decisões em dados dos backtests — nunca em intuição pura
-- Altera um parâmetro de cada vez para perceber o impacto isolado
+- Baseia todas as decisões em dados dos backtests
+- Altera um parâmetro de cada vez
 - Compara sempre com a versão anterior
-- Se os resultados piorarem, explica porquê e volta atrás
 - Documenta cada iteração no knowledge JSON
-
-## Tom
-
-Directo, técnico, orientado a dados. Português europeu.
-Quando corres um backtest, apresenta sempre a comparação com a versão anterior.
 """
 
     def __init__(self):
@@ -383,7 +384,7 @@ Quando corres um backtest, apresenta sempre a comparação com a versão anterio
                         "anthropic-version": "2023-06-01",
                     },
                     json={
-                        "model": CLAUDE_MODEL_FAST if iteration < max_iterations else CLAUDE_MODEL_SMART,
+                        "model": CLAUDE_MODEL_FAST,
                         "max_tokens": MAX_TOKENS,
                         "system":     self.SYSTEM_PROMPT,
                         "tools":      TOOLS,
@@ -394,14 +395,6 @@ Quando corres um backtest, apresenta sempre a comparação com a versão anterio
                 response.raise_for_status()
                 data = response.json()
 
-            except requests.exceptions.HTTPError as e:
-                if hasattr(e, 'response') and e.response is not None and e.response.status_code == 429:
-                    logger.warning("Rate limit atingido, aguardando 30s...")
-                    time.sleep(30)
-                    continue
-                error_msg = f"Erro na API: {str(e)}"
-                logger.error(error_msg)
-                return error_msg
             except Exception as e:
                 error_msg = f"Erro na API: {str(e)}"
                 logger.error(error_msg)
