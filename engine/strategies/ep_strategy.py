@@ -23,7 +23,7 @@ def _load_ep_knowledge() -> dict:
 class EpisodicPivotStrategy(BaseStrategy):
     name        = "Episodic Pivot"
     description = "Gap + volume explosivo num catalisador transformador (Pradeep Bonde)"
-    version     = "2.1"
+    version     = "2.4"
 
     # Critérios mínimos (alinhados com Pradeep)
     MIN_GAP_PCT      = 8.0    # Pradeep usa 8% — subimos de 5%
@@ -69,6 +69,10 @@ class EpisodicPivotStrategy(BaseStrategy):
 
         # Cap de volume ratio — acima de 15x tende a reverter (validado em backtest)
         if avg_vol > 0 and vol_day / avg_vol > self.MAX_VOLUME_RATIO:
+            return False
+
+        # First EP in 52 weeks — efeito surpresa é menor se já houve EP recente
+        if not self._is_first_ep_52w(df):
             return False
 
         return True
@@ -170,6 +174,34 @@ class EpisodicPivotStrategy(BaseStrategy):
                     score += 10  # range muito estreito = consolidação / negligência
 
         return min(score, 40.0)
+
+    def _is_first_ep_52w(self, df: pd.DataFrame) -> bool:
+        """
+        Verifica se este é o primeiro EP nos últimos 52 semanas.
+        Se já houve um EP (gap >= 8% + volume >= 3x) nos últimos 252 dias,
+        o efeito surpresa é menor — excluir.
+        """
+        if len(df) < 30:
+            return True  # dados insuficientes — deixar passar
+
+        lookback = df.iloc[-253:-1] if len(df) >= 254 else df.iloc[:-1]
+
+        for i in range(1, len(lookback)):
+            bar  = lookback.iloc[i]
+            prev = lookback.iloc[i - 1]
+
+            gap = (float(bar["open"]) - float(prev["close"])) / float(prev["close"]) * 100
+            if gap < 8.0:
+                continue
+
+            lookback_vol = min(100, i)
+            avg_vol = float(lookback.iloc[max(0, i - lookback_vol):i]["volume"].mean())
+            vol_ratio = float(bar["volume"]) / avg_vol if avg_vol > 0 else 0
+
+            if vol_ratio >= 3.0:
+                return False  # já houve EP recente — excluir
+
+        return True  # primeiro EP — aceitar
 
     def _calculate_score(self, df: pd.DataFrame, gap_pct: float,
                          vol_ratio: float, neglect_score: float = 0) -> float:

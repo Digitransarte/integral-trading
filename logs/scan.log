@@ -240,3 +240,35 @@
 2026-04-24 15:01:13,409 INFO   Avaliação parcial (API indisponível). Score: 65.0
 2026-04-24 15:01:13,409 INFO 
 2026-04-24 15:01:13,409 INFO Scan + Decision Engine concluidos.
+2026-04-28 15:00:02,345 INFO =======================================================
+2026-04-28 15:00:02,346 INFO Scanner EP + Decision Engine a iniciar
+2026-04-28 15:00:02,346 INFO =======================================================
+2026-04-28 15:00:02,346 INFO Data: 2026-04-28
+2026-04-28 15:00:02,346 INFO Fase 1: Scanner EP...
+2026-04-28 15:00:02,346 INFO Scanner a iniciar: 81 tickers
+2026-04-28 15:00:03,580 ERROR $ACCD: possibly delisted; no timezone found
+2026-04-28 15:00:03,586 ERROR 
+1 Failed download:
+2026-04-28 15:00:03,586 ERROR ['ACCD']: possibly delisted; no timezone found
+2026-04-28 15:00:06,887 ERROR $AXNX: possibly delisted; no timezone found
+2026-04-28 15:00:06,894 ERROR 
+1 Failed download:
+2026-04-28 15:00:06,894 ERROR ['AXNX']: possibly delisted; no timezone found
+2026-04-28 15:00:16,134 ERROR $NARI: possibly delisted; no timezone found
+2026-04-28 15:00:16,136 ERROR 
+1 Failed download:
+2026-04-28 15:00:16,136 ERROR ['NARI']: possibly delisted; no timezone found
+2026-04-28 15:00:20,184 ERROR $SWAV: possibly delisted; no timezone found
+2026-04-28 15:00:20,189 ERROR 
+1 Failed download:
+2026-04-28 15:00:20,189 ERROR ['SWAV']: possibly delisted; no timezone found
+2026-04-28 15:00:21,639 INFO Candidatos: 0 de 81 tickers
+2026-04-28 15:00:21,650 INFO Nenhum candidato — a saltar Decision Engine.
+2026-04-29 15:00:02,262 INFO =======================================================
+2026-04-29 15:00:02,263 INFO Scanner EP + Decision Engine a iniciar
+2026-04-29 15:00:02,263 INFO =======================================================
+2026-04-29 15:00:02,263 INFO Data: 2026-04-29
+2026-04-29 15:00:02,263 INFO Fase 1: Scanner EP...
+2026-04-29 15:00:02,263 INFO Scanner a iniciar: 65 tickers
+2026-04-29 15:00:15,843 INFO Candidatos: 0 de 65 tickers
+2026-04-29 15:00:15,854 INFO Nenhum candidato — a saltar Decision Engine.

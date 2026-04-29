@@ -21,12 +21,6 @@ st.markdown("""
 st.sidebar.markdown("## ◈ Integral Trading")
 st.sidebar.markdown("---")
 
-page = st.sidebar.radio(
-    "",
-    ["Dashboard", "Scanner", "Posicoes", "Especialistas",
-     "Automacao", "Aprendizagem", "Backtest", "Historico"],
-    label_visibility="collapsed",
-)
 
 page = st.sidebar.radio(
     "",
@@ -119,3 +113,7 @@ elif page == "Historico":
 elif page == "Tuning":
     from pages.tuning import render
     render()
+
+elif page == "Regime":
+    from pages.regime import render
+    render()    

@@ -9,44 +9,37 @@ Cada ticker pertence a UM só sector activo.
 SECTORS = {
 
     "small_growth": [
-        # Confirmados com bons EPs históricos
-        "HIMS", "RXRX", "RKLB", "ASTS", "LUNR",
-        "SOUN", "IONQ", "CELH", "MNDY", "GLBE",
-        "INSP", "IRTC", "AXSM", "PRAX", "TMDX",
-        # Adicionados — small caps com fundamentais e padrão EP
-        "AEHR", "ENPH", "TGTX", "KRUS", "ADMA",
-        "ATNI", "GERN", "TTGT", "CRVS", "PMVP",
+        "HIMS", "RXRX", "ACHR", "JOBY", "RKLB", "ASTS", "LUNR",
+        "SOUN", "BBAI", "IONQ", "CELH", "DUOL", "MNDY", "GLBE",
+        "INSP", "IRTC", "NVCR", "AXSM", "PRAX", "TMDX",
     ],
 
     "space_defense": [
-        # Removidos: MNTS (altamente especulativo), AVAV (reversões violentas)
-        "RDW", "KTOS", "RCAT", "PLTR", "SPCE",
-        # Adicionados — defense com padrão EP mais estável
-        "HII", "LDOS", "CACI", "DRS",
+        "MNTS", "RDW", "KTOS", "RCAT", "AVAV", "PLTR", "SPCE",
     ],
 
     "ai_tech": [
-        # Removidos: QUBT, ARQQ (quantum especulativo sem fundamentais)
-        "QBTS", "RGTI",
+        "QBTS", "RGTI", "QUBT", "ARQQ",
         "IREN", "CORZ", "BTDR", "CIFR", "WULF",
         "SMCI", "NVTS", "ALAB", "MRVL", "ARM",
-        # Adicionados — AI/tech com padrão EP mais sólido
-        "SOUN", "BBAI", "MTSI", "ANET", "CIEN",
     ],
 
     "mid_cap_momentum": [
         "AXON", "CAVA", "BROS", "ELF", "APP",
         "IBKR", "CASY", "FTDR",
-        # Adicionados — mid caps com historial EP positivo
-        "WING", "SHAK", "LULU", "DECK", "BOOT",
-        "FICO", "MEDP", "TREX", "TPVG", "FCFS",
     ],
 
     "healthcare_devices": [
         "OFIX", "ATRC", "MMSI", "LMAT", "NVST",
-        # Adicionados — healthcare com padrão EP validado
-        "IRTC", "INSP", "AXNX", "NARI", "SWAV",
-        "HCAT", "DOCS", "ACCD", "PHR", "OMCL",
+    ],
+
+    "ep_opportunity": [
+        # Tier 1 — SaaS/Cloud com earnings surprises consistentes
+        "PSTG", "CRWD", "MDB", "DDOG", "DOCU",
+        # Tier 2 — Cybersecurity com padrão EP validado
+        "FTNT", "OKTA", "ZS",
+        # Tier 3 — Edge/devices com earnings consistency
+        "NET", "ALGN", "NOW",
     ],
 }
 
@@ -83,15 +76,16 @@ FULL_UNIVERSE = sorted(set(
 
 DASHBOARD_UNIVERSES = {
     "Personalizado":              [],
-    "Small Cap Growth (30)":      SECTORS["small_growth"],
-    "Space & Defense (9)":        SECTORS["space_defense"],
-    "AI & Tech (17)":             SECTORS["ai_tech"],
-    "Mid Cap Momentum (18)":      SECTORS["mid_cap_momentum"],
-    "Healthcare Devices (15)":    SECTORS["healthcare_devices"],
+    "Small Cap Growth":           SECTORS["small_growth"],
+    "Space & Defense":            SECTORS["space_defense"],
+    "AI & Tech":                  SECTORS["ai_tech"],
+    "Mid Cap Momentum":           SECTORS["mid_cap_momentum"],
+    "Healthcare Devices":         SECTORS["healthcare_devices"],
+    "EP Opportunity (11)":        SECTORS["ep_opportunity"],
     "S&P 500 Sample (16)":        REFERENCE["sp500_sample"],
     "ETFs (9)":                   REFERENCE["etf"],
-    "Universo Principal (~75)":   MAIN_UNIVERSE,
-    "Universo Completo (~90)":    FULL_UNIVERSE,
+    "Universo Principal":         MAIN_UNIVERSE,
+    "Universo Completo":          FULL_UNIVERSE,
     "Biotech [watchlist]":        WATCHLIST_ONLY["biotech_watchlist"],
     "Crypto [watchlist]":         WATCHLIST_ONLY["crypto_watchlist"],
 }
