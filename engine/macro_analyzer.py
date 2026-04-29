@@ -5,9 +5,9 @@ Analisa o contexto macro para ouro e prata.
 Baseado no knowledge SMC do Jayce Pham (NCI).
 
 Fontes de dados (todos via yfinance):
-  GLD  — ETF proxy do ouro (XAU/USD)
-  SLV  — ETF proxy da prata (XAG/USD)
-  UUP  — ETF proxy do DXY (dólar index)
+  GC=F — Futuros do ouro COMEX (XAU/USD preço real)
+  SI=F — Futuros da prata COMEX (XAG/USD preço real)
+  DX=F — Futuros do DXY ICE (dólar index real)
   TLT  — ETF proxy do yield 20Y (inverso dos yields)
   ^VIX — Volatilidade / fear index
 """
@@ -136,7 +136,7 @@ class MacroAnalyzer:
         signals_bearish = []
         score = 50  # começa neutro
 
-        # ── DXY (UUP como proxy) ──────────────────────────────────────────
+        # ── DXY (DX=F futuros ICE) ───────────────────────────────────────
         dxy = self._analyze_dxy()
         if dxy:
             if dxy.trend == "BEARISH":
@@ -176,8 +176,8 @@ class MacroAnalyzer:
                 vix_signal = f"VIX controlado: {vix_level:.1f}"
 
         # ── Estrutura de mercado — Ouro e Prata ──────────────────────────
-        gold_structure   = self._analyze_structure("GLD", "Ouro")
-        silver_structure = self._analyze_structure("SLV", "Prata")
+        gold_structure   = self._analyze_structure("GC=F", "Ouro")
+        silver_structure = self._analyze_structure("SI=F", "Prata")
 
         # Setup alert
         setup_alert = ""
@@ -223,9 +223,9 @@ class MacroAnalyzer:
         )
 
     def _analyze_dxy(self) -> Optional[MacroComponent]:
-        """Analisa o DXY via UUP ETF."""
+        """Analisa o DXY via futuros DX=F (ICE)."""
         try:
-            df = self.feed.get_bars("UUP", days=80)
+            df = self.feed.get_bars("DX=F", days=80)
             if df.empty or len(df) < SMA_LONG:
                 return None
 
@@ -246,10 +246,10 @@ class MacroAnalyzer:
                 signal = "neutro"
 
             pct_from_sma20 = (price - sma20) / sma20 * 100
-            detail = f"UUP ${price:.3f} | SMA20 ${sma20:.3f} ({pct_from_sma20:+.1f}%)"
+            detail = f"DX=F {price:.2f} | SMA20 {sma20:.2f} ({pct_from_sma20:+.1f}%)"
 
             return MacroComponent(
-                name="DXY (UUP)", value=price,
+                name="DXY (DX=F)", value=price,
                 sma_short=sma20, sma_long=sma50,
                 trend=trend, signal=signal, detail=detail
             )
