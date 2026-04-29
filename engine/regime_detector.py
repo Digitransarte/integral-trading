@@ -195,17 +195,19 @@ class RegimeDetector:
     def _check_index_vs_sma(self, ticker: str, sma_days: int):
         """Verifica se um índice está acima da sua SMA."""
         try:
-            df = self.feed.get_bars(ticker, days=sma_days + 10)
-            if df.empty or len(df) < sma_days:
+            df = self.feed.get_bars(ticker, days=sma_days + 60)
+            if df.empty or len(df) < 20:
                 return 0.0, 0.0, False
 
-            price = float(df["close"].iloc[-1])
-            sma   = float(df["close"].tail(sma_days).mean())
-            above = price > sma
+            price       = float(df["close"].iloc[-1])
+            actual_days = min(sma_days, len(df))
+            sma         = float(df["close"].tail(actual_days).mean())
+            above       = price > sma
             return price, sma, above
         except Exception as e:
             logger.error(f"Erro _check_index_vs_sma {ticker}: {e}")
             return 0.0, 0.0, False
+
 
     def _get_vix(self) -> float:
         """Obtém o nível actual do VIX."""

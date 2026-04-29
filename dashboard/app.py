@@ -117,3 +117,7 @@ elif page == "Tuning":
 elif page == "Regime":
     from pages.regime import render
     render()    
+
+elif page == "Macro":
+    from pages.macro import render
+    render()    
