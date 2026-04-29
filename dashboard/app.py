@@ -24,8 +24,8 @@ st.sidebar.markdown("---")
 
 page = st.sidebar.radio(
     "",
-    ["Dashboard", "Scanner", "Posicoes", "Especialistas",
-     "Automacao", "Aprendizagem", "Backtest", "Historico", "Tuning"],
+    ["Dashboard", "Regime", "Scanner", "Posicoes", "Especialistas",
+ "Automacao", "Aprendizagem", "Backtest", "Historico", "Tuning"],
     label_visibility="collapsed",
 )
 
