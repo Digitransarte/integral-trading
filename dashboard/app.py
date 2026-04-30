@@ -1,4 +1,4 @@
-"""Integral Trading — Dashboard v0.7.0"""
+"""Integral Trading — Dashboard v0.9.0"""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -21,16 +21,15 @@ st.markdown("""
 st.sidebar.markdown("## ◈ Integral Trading")
 st.sidebar.markdown("---")
 
-
 page = st.sidebar.radio(
     "",
-    ["Dashboard", "Regime", "Scanner", "Posicoes", "Especialistas",
- "Automacao", "Aprendizagem", "Backtest", "Historico", "Tuning"],
+    ["Dashboard", "Regime", "Macro", "NCI", "Scanner", "Posicoes",
+     "Especialistas", "Automacao", "Aprendizagem", "Backtest", "Historico", "Tuning"],
     label_visibility="collapsed",
 )
 
 st.sidebar.markdown("---")
-st.sidebar.caption("v0.8.0 — paper trading")
+st.sidebar.caption("v0.9.0 — paper trading")
 
 if page == "Dashboard":
     st.title("◈ Integral Trading")
@@ -69,18 +68,20 @@ if page == "Dashboard":
             st.subheader("Posicoes Abertas")
             for p in open_pos:
                 icon = "🟢" if p.pnl_pct >= 0 else "🔴"
-                st.write(
-                    icon + " **" + p.ticker + "**" +
-                    "  $" + str(round(p.current_price, 2)) +
-                    "  " + "{:+.1f}%".format(p.pnl_pct) +
-                    "  Dia " + str(p.days_held) + "/20"
-                )
+                st.write(icon + " **" + p.ticker + "**" +
+                         "  $" + str(round(p.current_price, 2)) +
+                         "  " + "{:+.1f}%".format(p.pnl_pct) +
+                         "  Dia " + str(p.days_held) + "/20")
         else:
             st.markdown("---")
-            st.info("Nenhuma posicao aberta. Usa o **Scanner** ou **Automacao** para encontrar candidatos.")
+            st.info("Nenhuma posicao aberta.")
     except Exception:
         for col in st.columns(5):
             col.metric("-", "-")
+
+elif page == "NCI":
+    from pages.nci import render
+    render()
 
 elif page == "Scanner":
     from pages.scanner import render
@@ -116,8 +117,8 @@ elif page == "Tuning":
 
 elif page == "Regime":
     from pages.regime import render
-    render()    
+    render()
 
 elif page == "Macro":
     from pages.macro import render
-    render()    
+    render()
