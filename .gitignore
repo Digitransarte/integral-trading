@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+venv/
+.venv/
+env/
+
+# Dados e logs (não versionar)
+data/
+logs/
+*.db
+*.log
+
+# Backups
+Backups/
+*.bak
+*.bak.*
+
+# Segredos (CRÍTICO — nunca commitar)
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Snapshot output (gerado, não versionar)
+ESTRUTURA_APP.md

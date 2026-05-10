@@ -1,0 +1,185 @@
+{
+  "_comment": "Integral Trading — NCI Strategy Parameters. Editável na UI.",
+  "pivot": {
+    "strength": 3,
+    "_comment": "Barras de cada lado para confirmar pivot. 3=frequente, 5=estrutural"
+  },
+  "entry": {
+    "pullback_zone_pct": 2.0,
+    "_comment_pullback": "% máxima de distância ao Key Level para considerar pullback válido",
+    "min_rr": 1.5,
+    "_comment_rr": "R:R mínimo para aceitar entrada",
+    "stop_buffer_pct": 0.3,
+    "_comment_stop": "% de buffer abaixo do wick mínimo para o stop loss"
+  },
+  "manipulation": {
+    "enabled": true,
+    "max_penetration_pct": 1.5,
+    "_comment": "% máxima que o wick pode penetrar abaixo do KL. Acima = estrutura quebrada"
+  },
+  "bos": {
+    "required": true,
+    "timeframe": "h1",
+    "_comment": "Timeframe onde o BOS deve ser confirmado: h4 ou h1"
+  },
+  "trend": {
+    "sma_fast": 20,
+    "sma_slow": 50,
+    "_comment": "SMAs para determinar tendência em cada timeframe"
+  },
+  "filters": {
+    "macro_min_score": 40,
+    "_comment_macro": "Score macro mínimo (0-100) para aceitar longs. Abaixo = WATCH apenas",
+    "min_confluence_score": 60,
+    "_comment_confluence": "Score de confluência mínimo (0-100) para sinal válido"
+  },
+  "assets": {
+    "commodities": [
+      "XAUUSD=X",
+      "XAGUSD=X",
+      "CL=F",
+      "BZ=F",
+      "NG=F",
+      "ZW=F",
+      "ZC=F",
+      "HG=F"
+    ],
+    "forex": [
+      "EURUSD=X",
+      "GBPUSD=X",
+      "USDJPY=X",
+      "AUDUSD=X",
+      "USDCAD=X",
+      "AUDJPY=X"
+    ],
+    "_comment": "Activos activos para o NCI scanner. Editar conforme watchlist"
+  },
+  "causal_graph": {
+    "_comment": "Relações causais entre eventos e activos. Crescem com o tempo.",
+    "relations": [
+      {
+        "id": "geo_ormuz_oil",
+        "trigger": "geopolitical_tension_ormuz",
+        "asset": "CL=F",
+        "direction": "BULLISH",
+        "lag_weeks": [
+          0,
+          2
+        ],
+        "strength": 9,
+        "mechanism": "Bloqueio do estreito de Ormuz reduz oferta de petróleo do Golfo",
+        "source": "histórico 1973-2024",
+        "active": true
+      },
+      {
+        "id": "oil_inflation_gold",
+        "trigger": "oil_price_surge",
+        "asset": "XAUUSD=X",
+        "direction": "BULLISH",
+        "lag_weeks": [
+          2,
+          8
+        ],
+        "strength": 7,
+        "mechanism": "Petróleo alto → inflação → gold como hedge inflacionário",
+        "source": "correlação histórica 1970-2024",
+        "active": true
+      },
+      {
+        "id": "fed_pause_gold",
+        "trigger": "fed_rate_pause",
+        "asset": "XAUUSD=X",
+        "direction": "BULLISH",
+        "lag_weeks": [
+          12,
+          24
+        ],
+        "strength": 9,
+        "mechanism": "Pausa Fed → yields reais atingem pico → rotação para ouro",
+        "source": "ciclos Fed 1995-2024",
+        "active": true
+      },
+      {
+        "id": "cold_winter_gas",
+        "trigger": "cold_winter_forecast",
+        "asset": "NG=F",
+        "direction": "BULLISH",
+        "lag_weeks": [
+          4,
+          8
+        ],
+        "strength": 8,
+        "mechanism": "Previsão de inverno frio → procura de aquecimento → pressão nos stocks de gás",
+        "source": "sazonalidade histórica",
+        "active": true
+      },
+      {
+        "id": "china_slowdown_copper",
+        "trigger": "china_pmi_below_50",
+        "asset": "HG=F",
+        "direction": "BEARISH",
+        "lag_weeks": [
+          0,
+          4
+        ],
+        "strength": 8,
+        "mechanism": "China é o maior consumidor de cobre — PMI fraco sinaliza menor procura",
+        "source": "correlação histórica 2000-2024",
+        "active": true
+      },
+      {
+        "id": "dxy_gold_inverse",
+        "trigger": "dxy_uptrend",
+        "asset": "XAUUSD=X",
+        "direction": "BEARISH",
+        "lag_weeks": [
+          0,
+          2
+        ],
+        "strength": 8,
+        "mechanism": "Ouro cotado em USD — DXY forte torna ouro mais caro para compradores externos",
+        "source": "correlação estrutural",
+        "active": true
+      },
+      {
+        "id": "la_nina_soy",
+        "trigger": "la_nina_forecast",
+        "asset": "ZS=F",
+        "direction": "BULLISH",
+        "lag_weeks": [
+          8,
+          20
+        ],
+        "strength": 7,
+        "mechanism": "La Niña → seca no Brasil (maior exportador) → oferta de soja cai",
+        "source": "NOAA historical + USDA",
+        "active": true
+      }
+    ]
+  },
+  "backtesting": {
+    "max_bars_timeout": 10,
+    "trailing_stop_pct": 2.0,
+    "optimal_params_gold": {
+      "min_score": 25,
+      "trailing_stop_pct": 2.0,
+      "note": "Calibrado em GC=F 2024-2026. PF=2.76, WR=59.6%, retorno=61.6%"
+    },
+    "optimal_params_oil": {
+      "min_score": 25,
+      "trailing_stop_pct": 2.0,
+      "direction_filter": "LONG",
+      "note": "CL=F 2024-2026. PF=4.27, WR=50%, retorno=47%"
+    },
+    "direction_filter": "LONG"
+  },
+  "key_level": {
+    "_comment": "Filtros para detecção de Key Level estrutural NCI",
+    "max_distance_pct": {
+      "daily": 10.0,
+      "h4": 5.0,
+      "h1": 3.0,
+      "_comment": "% máxima de distância KL→preço para considerar KL válido. Acima disto, KL considerado morto e procurado outro lado."
+    }
+  }
+}

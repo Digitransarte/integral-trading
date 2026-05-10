@@ -1,0 +1,349 @@
+{
+  "strategy": "Smart Money Concepts — Market Structure + Price Action + Volume",
+  "author": "Jayce Pham (NCI Trading Academy)",
+  "version": "1.0",
+  "last_updated": "2026-04-29",
+  "markets": ["Forex", "Gold (XAU/USD)", "Silver (XAG/USD)", "Crypto", "Stocks"],
+  "source_documents": [
+    "NCI_0.docx — Introdução Market Structure e Market Cycle",
+    "Market_structure_course-1.pdf — Curso completo Market Structure (298 páginas)",
+    "Level_1.docx — Forex, Pips, Lots, Leverage, Professional Strategy",
+    "Level_2.docx — Smart Money Concepts: Liquidity, IMB/FVG, Manipulation, BOS/CTS, Order Blocks",
+    "Level_3.docx — Volume Analysis + Final Combination Key Level + SMC"
+  ],
+  "note": "Transcrição automática — algumas palavras podem não corresponder exactamente ao que foi dito",
+
+  "philosophy": {
+    "summary": "Seguir o dinheiro inteligente (Smart Money — Banks, Funds, Market Makers). Eles criam as zonas, manipulam o mercado para obter liquidez, e depois movem o preço na direcção real. Nós esperamos que o preço volte às zonas para entrar com eles.",
+    "four_pillars": ["TREND (Estrutura)", "ZONE (Key Level / Order Block)", "MOMENTUM (Volume + Group Candles)", "CONFIRMATION (Candle Pattern)"],
+    "core_principle": "Usar o simples para analisar o complexo. Não usar estratégias complicadas — uma estratégia clara que melhora com o tempo.",
+    "professional_strategy_requirements": {
+      "win_rate": ">= 60%",
+      "reward_risk": ">= 2.5x (ideal 3x)",
+      "stop_loss": "< 20 pips (estratégia Jayce para fundos)",
+      "breakeven_formula": "Com RR 3x, só precisas de 25% win rate para breakeven"
+    }
+  },
+
+  "candle_types": {
+    "marubozu": {
+      "definition": "Corpo >= 70% do comprimento total. Pressão unilateral forte.",
+      "bullish": "Compradores dominaram completamente — buying pressure consistente",
+      "bearish": "Vendedores dominaram completamente — selling pressure consistente",
+      "special_maru": {
+        "definition": "Cauda longa + close perto do high/low + corpo >= 50%. Shock move — absorção de pressão oposta.",
+        "bullish_special": "Cauda longa abaixo, close perto do high — compradores absorveram toda a pressão vendedora rapidamente",
+        "bearish_special": "Cauda longa acima, close perto do low — vendedores absorveram toda a pressão compradora rapidamente"
+      },
+      "volume_confirmation": {
+        "strong_maru": "Marubozu com volume acima da média — REAL. Compradores/vendedores genuinamente fortes.",
+        "fake_maru": "Marubozu com volume abaixo da média — FALSO. Sem resistência oposta, não é forte o suficiente.",
+        "rule": "Alto esforço (volume) = Alta probabilidade de resultado. Baixo esforço = resultado fraco."
+      }
+    },
+    "pinbar": {
+      "definition": "Corpo < 50% do comprimento total. Candle grande.",
+      "meaning": "Luta entre compradores e vendedores. Indecisão com poder.",
+      "with_volume": "Pinbar com volume forte = sinal válido para entrada",
+      "without_volume": "Pinbar sem volume = NÃO entrar — sinal fraco",
+      "note": "Ignorar a cor do candle. Esperar confirmação adicional."
+    },
+    "doji": {
+      "definition": "Candle pequeno — corpo e caudas pequenas",
+      "meaning": "Sem interesse do mercado. Compradores e vendedores iguais.",
+      "with_volume": "Doji com volume forte = Smart Money a comprimir o preço — sinal de reversão iminente",
+      "without_volume": "Doji sem volume = ignorar",
+      "mopping_pattern": "Série de Dojis/candles pequenos com volume crescente = Smart Money a absorver pressão antes de movimento forte"
+    },
+    "engulfing": {
+      "definition": "Candle que engloba o candle anterior completamente",
+      "strong_engulfing": "Engulfing com volume forte na key zone = entrada válida",
+      "weak_engulfing": "Engulfing com volume fraco = não entrar ainda"
+    },
+    "reading_rule": "Não ler candle a candle — analisar grupo de candles (ondas) primeiro, depois candles individuais nas key zones"
+  },
+
+  "market_structure": {
+    "definition": "Série de Higher Highs/Higher Lows (uptrend) ou Lower Highs/Lower Lows (downtrend).",
+    "purpose": ["Entender a TENDÊNCIA", "Identificar KEY LEVELS (zonas de entrada)", "Definir SL e TP", "Controlar risco"],
+    "uptrend": {
+      "pattern": "Higher High (HH) + Higher Low (HL)",
+      "key_level": "Up Key Level = Low recente que criou o HH mais recente. Zona de compra (buying pressure).",
+      "recent_high": "Zona de venda (taking profit pelos compradores existentes)",
+      "trend_valid": "Enquanto preço está ACIMA do Up Key Level → tendência continua",
+      "trend_broken": "Preço fecha ABAIXO do Up Key Level → tendência mudou para downtrend"
+    },
+    "downtrend": {
+      "pattern": "Lower Low (LL) + Lower High (LH)",
+      "key_level": "Down Key Level = High recente que criou o LL mais recente. Zona de venda (selling pressure).",
+      "recent_low": "Zona de compra (taking profit pelos vendedores existentes)",
+      "trend_valid": "Enquanto preço está ABAIXO do Down Key Level → tendência continua",
+      "trend_broken": "Preço fecha ACIMA do Down Key Level → tendência mudou para uptrend"
+    },
+    "structure_types": {
+      "main_structure": "Estrutura principal do timeframe de análise",
+      "internal_structure": "Estrutura dentro da pullback wave — timeframe inferior"
+    },
+    "valid_breakout": {
+      "requirements": [
+        "Preço FECHA além do key level (não apenas ultrapassa)",
+        "Preferencialmente com Marubozu candle",
+        "Volume acima da média (para stocks e crypto — Forex não precisa)"
+      ],
+      "invalid_signals": ["Pinbar ou Doji no key level sem confirmação", "Cauda longa mas close dentro do range", "Volume muito fraco (stocks/crypto)"]
+    },
+    "valid_pullback": {
+      "requirements": [
+        "Pullback wave com volume DECRESCENTE (tendência continua)",
+        "Pullback não quebra a estrutura interna de forma consistente",
+        "Pullback termina com candle de confirmação na key zone"
+      ],
+      "invalid_signals": ["Pullback com volume igual ou maior que pulse wave", "Múltiplos Marubozu no sentido contrário ao trend"]
+    }
+  },
+
+  "market_cycle": {
+    "definition": "O ciclo define quando uma tendência começa e termina.",
+    "phases": {
+      "pulse_wave": "Movimento forte na direcção da tendência — volume CRESCENTE confirma",
+      "pullback_wave": "Recuo após pulse wave — volume DECRESCENTE confirma que tendência continua",
+      "reversal_signal": "Pulse wave com volume decrescente = tendência a enfraquecer"
+    },
+    "momentum_rules": {
+      "healthy_uptrend": "Pulse wave volume > Pullback wave volume → tendência saudável",
+      "weakening_uptrend": "Pulse wave volume <= Pullback wave volume → tendência a enfraquecer",
+      "reversal_warning": "Última pulse wave com volume menor que a anterior = sinal de reversão iminente"
+    }
+  },
+
+  "smart_money_concepts": {
+    "liquidity": {
+      "definition": "Flexibilidade — facilidade de entrar e sair do mercado com baixo spread.",
+      "smart_money_need": "Bancos e fundos precisam de MUITA liquidez para colocar ordens de milhões. Por isso manipulam o mercado para criar essa liquidez.",
+      "retail_vs_smart": "Retail traders criam movimento lento. Smart Money cria movimentos rápidos e imbalances."
+    },
+    "imbalance_fvg": {
+      "definition": "Zona de desequilíbrio onde o mercado moveu muito rápido sem preencher todas as ordens. O preço tende a voltar para preencher.",
+      "identification": {
+        "candles_needed": 3,
+        "rule": "Gap entre o LOW do 3º candle e o HIGH do 1º candle",
+        "confirmation": "Pelo menos 1 dos 3 candles deve ser Marubozu"
+      },
+      "power_levels": {
+        "strongest": "3 Marubozu candles + grande gap",
+        "strong": "Grande gap + 1 candle contrário no meio",
+        "weak": "3 up candles + gap pequeno"
+      },
+      "price_behavior": "Preço naturalmente volta para preencher o imbalance (pullback natural). O ponto onde o pullback para = Order Block."
+    },
+    "manipulation": {
+      "definition": "Smart Money manipula o mercado para obter liquidez antes de mover na direcção real.",
+      "phases": {
+        "phase_1": "Pequenos candles — retail traders a tentar apanhar o topo após impulso",
+        "phase_2": "Big Marubozu na direcção contrária — Smart Money vende para criar pânico e obter liquidez",
+        "phase_3": "Mopping pattern (Doji/Pinbar pequenos) — Smart Money absorve toda a pressão contrária"
+      },
+      "detection_signals": [
+        "Big Marubozu no meio do pullback (Phase 2)",
+        "Double top / Double bottom no final do pullback",
+        "Mopping pattern (candles cada vez menores) com volume forte",
+        "Pinbar longo na zona de Order Block com volume forte"
+      ],
+      "liquidity_zones": [
+        "Abaixo de zonas de stop loss de retail traders",
+        "Abaixo do Order Block",
+        "Abaixo de trendlines (muitos stops colocados aqui)"
+      ]
+    },
+    "bos_cts": {
+      "bos": {
+        "name": "Break of Structure",
+        "definition": "O low recente que criou o HH mais recente (uptrend) ou o high recente que criou o LL mais recente (downtrend)",
+        "signal": "Quando o preço quebra o BOS → tendência MUDOU"
+      },
+      "cts": {
+        "name": "Continue the Structure",
+        "definition": "O high mais recente em uptrend (acima do BOS)",
+        "signal": "Quando o preço quebra o CTS → tendência CONTINUA"
+      },
+      "usage": "BOS e CTS têm UMA função: confirmar se o preço continua a tendência ou reverte"
+    },
+    "order_block": {
+      "definition": "A zona onde Smart Money colocou as suas ordens originais. O preço volta a esta zona após o imbalance para os retail traders que reconhecem o movimento se juntarem.",
+      "identification": "O último candle contrário antes do impulso que criou o imbalance",
+      "why_it_works": "Smart Money + Retail traders entram ao mesmo tempo nesta zona → movimento muito forte",
+      "poi": "POI (Point of Interest) = Order Block zone = zona onde Smart Money está presente",
+      "double_order_block": "Quando dois Order Blocks se sobrepõem — confluência muito forte"
+    }
+  },
+
+  "volume_analysis": {
+    "applicable_markets": {
+      "forex": "NÃO usar volume (mercado contínuo, liquidez sempre presente). Price action é suficiente.",
+      "stocks": "USAR volume — confirma se o sinal é real ou falso",
+      "crypto": "USAR volume — alta volatilidade, volume distingue movimentos reais",
+      "gold_silver": "USAR volume como confirmação adicional"
+    },
+    "setup": "TradingView: adicionar Volume + Volume MA (20 períodos) ao chart",
+    "single_candle_rules": {
+      "marubozu_strong": "Volume acima da MA → real. Volume abaixo → falso.",
+      "pinbar_valid": "Pinbar com volume forte → entrada válida. Sem volume → ignorar.",
+      "doji_warning": "Doji com volume forte → Smart Money a comprimir → reversão iminente"
+    },
+    "group_candle_rules": {
+      "step_1": "Definir estrutura de mercado primeiro (HH/HL ou LH/LL)",
+      "step_2": "Analisar volume de onda a onda (pulse vs pullback)",
+      "step_3": "Entrar com candle individual na key zone",
+      "pulse_wave": "Volume CRESCENTE confirma continuação da tendência",
+      "pullback_wave": "Volume DECRESCENTE confirma que o pullback é saudável",
+      "warning_signal": "Pulse wave com volume DECRESCENTE = tendência a enfraquecer = sinal de saída"
+    }
+  },
+
+  "trading_strategies": {
+    "CKL_key_level": {
+      "name": "CKL — Key Level Strategy",
+      "setup": "Preço retorna ao Up Key Level (compra) ou Down Key Level (venda) após pullback",
+      "entry_conditions": [
+        "Estrutura em uptrend/downtrend confirmada",
+        "Preço chega ao key level",
+        "Aparece candle de confirmação (Marubozu, Engulfing forte) na zona",
+        "Volume forte no candle de confirmação (stocks/crypto)"
+      ],
+      "stop_loss": "Abaixo do Up Key Level (compra) — zona onde a tese é invalidada",
+      "take_profit": "Recent High (compra) ou Recent Low (venda)",
+      "rr_target": ">= 2.5x"
+    },
+    "BRT_break_retest": {
+      "name": "BRT — Break and Retest",
+      "setup": "Preço quebra o Recent High, recua para retestá-lo (agora suporte), entra na compra",
+      "entry_conditions": [
+        "Valid breakout com Marubozu e volume forte",
+        "Pullback para a zona de breakout com volume decrescente",
+        "Candle de confirmação no retest com volume forte"
+      ],
+      "stop_loss": "Abaixo da zona de retest",
+      "take_profit": "Próximo nível de resistência (recent high anterior)",
+      "rr_target": ">= 2.5x"
+    },
+    "SMC_order_block": {
+      "name": "SMC — Order Block / POI",
+      "setup": "Entrar quando o preço retorna ao Order Block após o imbalance",
+      "entry_conditions": [
+        "Imbalance identificado (FVG entre 3 candles)",
+        "Preço puxa de volta para o Order Block (último candle contrário antes do impulso)",
+        "Manipulation phase terminou (mopping ou pinbar com volume forte)",
+        "Candle de confirmação na zona (Engulfing ou Marubozu com volume)"
+      ],
+      "stop_loss": "Abaixo do Order Block",
+      "take_profit": "Topo do imbalance ou next key level",
+      "rr_target": ">= 3x"
+    }
+  },
+
+  "multiple_timeframe_system": {
+    "principle": "Analisar do maior para o menor. O maior define a direcção, o menor define a entrada.",
+    "jayce_workflow": {
+      "weekly": "Verificar estrutura macro (investing) — Stocks e Crypto",
+      "daily": "Definir tendência principal e key levels macro",
+      "h4": "Confirmar estrutura e identificar Order Blocks",
+      "h1": "Analisar momentum (volume de ondas)",
+      "m15": "Timeframe favorito do Jayce — entrada precisa e confirmação final"
+    },
+    "gold_silver_setup": {
+      "swing_trading": "Daily (tendência) + H4 (key levels) + H1 (entrada)",
+      "day_trading": "H4 (tendência) + H1 (key levels) + M15 (entrada)",
+      "scalping": "H1 (tendência) + M15 (key levels) + M5 (entrada)"
+    },
+    "rule": "NUNCA entrar contra a tendência do timeframe maior. A take profit do timeframe menor = recent high/low do timeframe maior."
+  },
+
+  "risk_management": {
+    "rr_minimum": 2.5,
+    "rr_ideal": 3.0,
+    "max_risk_per_trade_pct": 2.0,
+    "max_stop_loss_pips": 20,
+    "lot_calculation": "Lot = (Risco% × Saldo) ÷ (Stop Loss em pips × Valor por pip em 1 lot)",
+    "trailing_stop": "Mover stop loss para breakeven quando preço atinge zona de risco (potential risk zone)",
+    "early_exit_rule": "Se preço está a chegar a uma zona de risco forte (buying/selling zone do timeframe maior) antes do TP → fechar parcialmente ou totalmente",
+    "emotion_control": "Uma boa estratégia sem controlo emocional = perda garantida. Estratégia simples + disciplina > estratégia complexa"
+  },
+
+  "gold_silver_macro_filters": {
+    "description": "Filtros macro para XAU/USD e XAG/USD antes de entrar",
+    "dxy_correlation": {
+      "rule": "DXY em downtrend = favorável ao ouro. DXY em uptrend = desfavorável.",
+      "strength": "Correlação negativa forte — um dos filtros mais fiáveis"
+    },
+    "us_yields": {
+      "rule": "10Y yield a subir = pressão no ouro. A cair = favorável.",
+      "logic": "Ouro não tem yield — quando yields sobem, o ouro perde atractividade relativa"
+    },
+    "vix": {
+      "rule": "VIX alto = safe haven demand = favorável ao ouro",
+      "threshold": "VIX > 25 = demand significativa por activos seguros"
+    },
+    "best_setup": "Estrutura bullish no Daily/H4 + DXY em downtrend + Yields a cair + Preço no key level/Order Block = setup de alta probabilidade"
+  },
+
+  "patterns_to_avoid": {
+    "fake_breakout": "Breakout sem volume (stocks/crypto) — aguardar confirmação",
+    "pinbar_no_volume": "Pinbar sem volume em stocks/crypto — ignorar",
+    "against_macro": "Nunca entrar contra a tendência do timeframe maior",
+    "range_market": "Quando não há HH/HL ou LH/LL claros — aguardar breakout do range",
+    "weak_momentum": "Pulse wave com volume decrescente — não entrar, tendência a enfraquecer",
+    "manipulation_zone": "Não entrar quando preço está no meio de uma fase de manipulação (Phase 2/3)"
+  },
+
+  "entry_checklist": {
+    "step_1": "Definir estrutura do mercado (HH/HL ou LH/LL) — qual o timeframe maior diz?",
+    "step_2": "Identificar key level ou Order Block onde entrar",
+    "step_3": "Analisar momentum (grupo de candles + volume de ondas)",
+    "step_4": "Aguardar preço chegar à zona",
+    "step_5": "Confirmar com candle pattern (Marubozu/Engulfing forte + volume)",
+    "step_6": "Definir stop loss (abaixo/acima da key zone)",
+    "step_7": "Calcular TP e verificar RR >= 2.5x",
+    "step_8": "Verificar se há zonas de risco (potential risk zones) antes do TP",
+    "step_9": "Calcular lot size baseado no risco máximo de 2% da conta"
+  },
+
+  "knowledge_base": [
+    {
+      "source": "NCI Level 0 — Market Structure Introduction",
+      "insight": "O key level é o low recente que criou o higher high. É a zona de maior buying pressure. Stop abaixo = invalidação da tese.",
+      "date_added": "2026-04-29"
+    },
+    {
+      "source": "NCI Level 1 — Professional Strategy",
+      "insight": "Uma estratégia profissional requer: WR >= 60%, RR >= 2.5x, SL < 20 pips, e capacidade de melhoria contínua através de análise de trades passados.",
+      "date_added": "2026-04-29"
+    },
+    {
+      "source": "NCI Level 2 — Smart Money Concepts",
+      "insight": "Smart Money manipula o mercado em 3 fases antes de mover na direcção real. A Phase 3 (mopping/pinbar com volume na Order Block zone) é o sinal de entrada mais fiável.",
+      "date_added": "2026-04-29"
+    },
+    {
+      "source": "NCI Level 2 — Imbalance/FVG",
+      "insight": "Imbalance = gap entre candle 1 high e candle 3 low em 3 candles consecutivos com pelo menos 1 Marubozu. O preço tende a voltar para preencher este desequilíbrio.",
+      "date_added": "2026-04-29"
+    },
+    {
+      "source": "NCI Level 3 — Volume Analysis",
+      "insight": "Volume no Forex é irrelevante (mercado contínuo). Em Gold, Stocks e Crypto: pulse wave com volume crescente confirma tendência. Pulse wave com volume decrescente = alerta de reversão.",
+      "date_added": "2026-04-29"
+    },
+    {
+      "source": "NCI Level 3 — Group Candle Momentum",
+      "insight": "Analisar grupos de candles (ondas) ANTES de analisar candles individuais. Errar a onda = errar a estrutura = perder o trade mesmo com bom candle de entrada.",
+      "date_added": "2026-04-29"
+    },
+    {
+      "source": "Jayce Pham — FTMO Trading",
+      "insight": "Jayce usa M15 como timeframe de entrada favorito. Usa D1/H4 para contexto e H1/M15 para entrada. Take profit = recent high/low do timeframe maior.",
+      "date_added": "2026-04-29"
+    }
+  ],
+
+  "lessons_learned": []
+}
