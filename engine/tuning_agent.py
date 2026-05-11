@@ -20,12 +20,10 @@ from pathlib import Path
 import requests
 import logging
 
-from config import ANTHROPIC_API_KEY
+from config import ANTHROPIC_API_KEY, CLAUDE_MODEL_DECISION, CLAUDE_MODEL_FAST
 
 logger = logging.getLogger(__name__)
 
-CLAUDE_MODEL_SMART  = "claude-sonnet-4-20250514"   # respostas complexas
-CLAUDE_MODEL_FAST   = "claude-haiku-4-5-20251001"  # tool use e análise
 MAX_TOKENS          = 2000
 BASE_DIR     = Path(__file__).parent.parent
 

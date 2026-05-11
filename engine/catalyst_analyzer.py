@@ -18,11 +18,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
-from config import ANTHROPIC_API_KEY
+from config import ANTHROPIC_API_KEY, CLAUDE_MODEL_FAST
 
 logger = logging.getLogger(__name__)
-
-CLAUDE_MODEL = "claude-sonnet-4-20250514"
 
 
 @dataclass
@@ -206,7 +204,7 @@ Responde APENAS em JSON válido:
                 "anthropic-version": "2023-06-01",
             },
             json={
-                "model":      CLAUDE_MODEL,
+                "model":      CLAUDE_MODEL_FAST,
                 "max_tokens": 800,
                 "tools": [
                     {

@@ -17,12 +17,10 @@ import requests
 from datetime import datetime
 from typing import Optional
 
-from config import ANTHROPIC_API_KEY
+from config import ANTHROPIC_API_KEY, CLAUDE_MODEL_FAST
 from engine.database import get_conn, init_db
 
 logger = logging.getLogger(__name__)
-
-CLAUDE_MODEL = "claude-sonnet-4-20250514"
 
 
 class TradeAnalyst:
@@ -223,7 +221,7 @@ Responde APENAS em JSON:
                     "anthropic-version": "2023-06-01",
                 },
                 json={
-                    "model":      CLAUDE_MODEL,
+                    "model":      CLAUDE_MODEL_FAST,
                     "max_tokens": 500,
                     "system":     "És o especialista EP. Respondes APENAS em JSON válido.",
                     "messages":   [{"role": "user", "content": prompt}],

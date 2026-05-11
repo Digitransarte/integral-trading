@@ -5,7 +5,7 @@ Corre: python test_websearch.py
 import sys
 sys.path.insert(0, ".")
 import requests
-from config import ANTHROPIC_API_KEY
+from config import ANTHROPIC_API_KEY, CLAUDE_MODEL_FAST
 
 print("\nA testar web search da Anthropic API...")
 
@@ -18,7 +18,7 @@ try:
             "anthropic-version": "2023-06-01",
         },
         json={
-            "model":      "claude-sonnet-4-20250514",
+            "model":      CLAUDE_MODEL_FAST,
             "max_tokens": 200,
             "tools": [
                 {

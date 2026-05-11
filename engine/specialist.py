@@ -14,11 +14,10 @@ from typing import Optional
 import requests
 import logging
 
-from config import ANTHROPIC_API_KEY
+from config import ANTHROPIC_API_KEY, CLAUDE_MODEL_DECISION
 
 logger = logging.getLogger(__name__)
 
-CLAUDE_MODEL = "claude-sonnet-4-20250514"
 MAX_TOKENS   = 2000
 MAX_HISTORY  = 20
 
@@ -49,7 +48,7 @@ class BaseSpecialist:
                     "anthropic-version": "2023-06-01",
                 },
                 json={
-                    "model":      CLAUDE_MODEL,
+                    "model":      CLAUDE_MODEL_DECISION,
                     "max_tokens": MAX_TOKENS,
                     "system":     full_system,
                     "messages":   history,
