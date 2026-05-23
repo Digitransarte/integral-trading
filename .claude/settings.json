@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git stash*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(streamlit run*)",
+      "Bash(uvicorn*)",
+      "Bash(python *.py)",
+      "Bash(pip install*)",
+      "Bash(pip list*)"
+    ],
+    "deny": [
+      "Bash(git push*)",
+      "Bash(ssh*)",
+      "Bash(scp*)",
+      "Bash(rm -rf*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean*)"
+    ]
+  }
+}
