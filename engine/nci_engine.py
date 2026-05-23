@@ -192,6 +192,7 @@ def classify_candles(df: pd.DataFrame) -> pd.DataFrame:
         Cópia do df com colunas adicionadas:
         candle_type, direction, body_pct, total_length, body
     """
+    df = df.reset_index(drop=True)
     result = df.copy()
     n = len(result)
 
@@ -290,6 +291,7 @@ def find_swings(df: pd.DataFrame, window: int = 2) -> pd.DataFrame:
         Cópia do df com colunas adicionadas:
         swing_high (bool), swing_low (bool)
     """
+    df = df.reset_index(drop=True)
     result = df.copy()
     n      = len(result)
     highs  = result["high"].to_numpy(dtype=float)
@@ -366,6 +368,7 @@ def find_key_level(df: pd.DataFrame, trend: str) -> dict | None:
     if trend not in ("uptrend", "downtrend"):
         return None
 
+    df    = df.reset_index(drop=True)
     idx   = df.index.tolist()
     highs = df["high"].to_numpy(dtype=float)
     lows  = df["low"].to_numpy(dtype=float)
@@ -422,6 +425,7 @@ def filter_external_swings(df: pd.DataFrame, key_level_index) -> dict:
             "internal": DataFrame (índices >  key_level_index),
         }
     """
+    df = df.reset_index(drop=True)
     external = df.loc[df.index <= key_level_index].copy()
     internal = df.loc[df.index >  key_level_index].copy()
     return {"external": external, "internal": internal}
@@ -453,6 +457,7 @@ def analyze_market_structure(df: pd.DataFrame, window: int = 2) -> dict:
             "internal":     DataFrame (estrutura interna) ou None
         }
     """
+    df = df.reset_index(drop=True)
     df_sw = find_swings(df, window=window)
 
     n     = len(df_sw)
@@ -521,6 +526,7 @@ def detect_pullback(df: pd.DataFrame, direction: str, start_idx: int) -> dict | 
         }
         ou None se não encontrado.
     """
+    df        = df.reset_index(drop=True)
     idx_list  = df.index.tolist()
     start_pos = _pos_of(idx_list, start_idx)
     n         = len(df)
@@ -611,6 +617,7 @@ def detect_breakout(df: pd.DataFrame, boi_price: float,
           "boi_confirmed": True
         ou None se não encontrado.
     """
+    df        = df.reset_index(drop=True)
     idx_list  = df.index.tolist()
     start_pos = _pos_of(idx_list, start_idx)
     n         = len(df)
@@ -717,6 +724,7 @@ def is_valid_bos(df: pd.DataFrame, key_level_price: float,
           "fake_at_index":    int | None,
         }
     """
+    df        = df.reset_index(drop=True)
     idx_list  = df.index.tolist()
     kl_pos    = _pos_of(idx_list, key_level_index)
     start_pos = kl_pos + 1
@@ -786,6 +794,7 @@ def detect_range(df: pd.DataFrame, start_idx: int,
           "candles_inside":    list[int],
         }
     """
+    df = df.reset_index(drop=True)
     _empty = {
         "detected": False, "type": None, "low_liquidity": False,
         "anchor_index": None, "anchor_price_high": None,
@@ -1038,6 +1047,9 @@ def analyze_nci(df_ltf: pd.DataFrame,
           }
         }
     """
+    df_ltf = df_ltf.reset_index(drop=True)
+    df_htf = df_htf.reset_index(drop=True)
+
     # 1. Classify
     df_ltf = classify_candles(df_ltf)
     df_htf = classify_candles(df_htf)
