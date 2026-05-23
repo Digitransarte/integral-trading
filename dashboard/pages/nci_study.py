@@ -261,7 +261,7 @@ def _status_html(all_aligned: bool) -> str:
     )
 
 
-# ── Reasoning text ─────────────────────────────────────────────────────────
+# ── Reasoning (3 blocos) ──────────────────────────────────────────────────
 
 _TREND_PT = {
     "uptrend":   "Alta  (HH + HL)",
@@ -270,20 +270,28 @@ _TREND_PT = {
     "undefined": "Indefinida",
 }
 
-_PAT_PT = {
-    "two_marubozu":   "P1 — Two Marubozu",
-    "big_maru_small": "P2 — Big Maru + Small",
-    "pac":            "PAC — confirmação alargada",
+_PAT_SHORT = {
+    "two_marubozu":   "P1 Two Marubozu",
+    "big_maru_small": "P2 Big Maru + Small",
+    "pac":            "PAC",
 }
 
-_KL_Q_PT = {
-    "normal":  "normal",
-    "weak":    "fraco  (range antes do pullback)",
-    "invalid": "inválido  (range após pullback)",
+_KL_Q_REASON = {
+    "normal":  "sem range contaminante",
+    "weak":    "range detectado antes do pullback — zona enfraquecida",
+    "invalid": "range detectado após o pullback — pullback invalidado",
+}
+
+_BOS_SHORT = {
+    "confirmed_bos": "BOS confirmado",
+    "fake_breakout": "BOS falso",
+    "pending":       "BOS pendente",
 }
 
 
-def _build_reasoning(result: dict, ticker: str, ltf: str, htf: str) -> str:
+def _render_reasoning(result: dict, ticker: str, ltf: str, htf: str,
+                      df_ltf: pd.DataFrame, df_htf: pd.DataFrame) -> None:
+    """Renderiza análise NCI em 3 blocos via st.markdown()."""
     trend     = result.get("trend", "undefined")
     htf_trend = result.get("htf_trend", "undefined")
     kl        = result.get("key_level")
@@ -292,74 +300,136 @@ def _build_reasoning(result: dict, ticker: str, ltf: str, htf: str) -> str:
     bos       = result.get("bos")
     cycle     = result.get("market_cycle", {})
     ff        = result.get("four_factors", {})
+    rng       = result.get("range", {})
 
-    lines = [
-        f"**{ticker}  |  LTF {ltf}  /  HTF {htf}**",
-        "",
-        f"**Estrutura LTF:** {_TREND_PT.get(trend, trend)}",
-        f"**Estrutura HTF:** {_TREND_PT.get(htf_trend, htf_trend)}",
-        "",
-    ]
+    # Swing prices (últimos 2 de cada lado, LTF e HTF)
+    sh_ltf = sl_ltf = []
+    sh_htf = sl_htf = []
+    sh_htf_all = sl_htf_all = []
+    try:
+        ms_ltf    = analyze_market_structure(classify_candles(df_ltf.copy()), window=3)
+        sh_ltf    = ms_ltf["swing_highs"][-2:]
+        sl_ltf    = ms_ltf["swing_lows"][-2:]
+    except Exception:
+        pass
+    try:
+        ms_htf     = analyze_market_structure(classify_candles(df_htf.copy()), window=5)
+        sh_htf     = ms_htf["swing_highs"][-2:]
+        sl_htf     = ms_htf["swing_lows"][-2:]
+        sh_htf_all = ms_htf["swing_highs"]
+        sl_htf_all = ms_htf["swing_lows"]
+    except Exception:
+        pass
 
-    if not cycle.get("cycle_active"):
-        tb = cycle.get("terminated_by") or "zona desconhecida"
-        lines.append(f"**Ciclo:** Terminado — preço atingiu zona HTF `{tb}`.")
-    elif cycle.get("warning"):
-        wz = cycle.get("warning_zone", "")
-        lines.append(f"**Ciclo:** Activo ⚠ — a aproximar zona HTF `{wz}` (< 20 % de margem).")
-    else:
-        lines.append("**Ciclo:** Activo — preço tem espaço para avançar.")
+    # HTF zones (para mostrar preço exacto do ciclo)
+    htf_kl = result.get("htf_key_level")
+    htf_zones = {
+        "down_key_level": htf_kl["price"] if (htf_kl and htf_trend == "downtrend") else None,
+        "up_key_level":   htf_kl["price"] if (htf_kl and htf_trend == "uptrend")   else None,
+        "recent_high":    float(max(sh_htf_all)) if sh_htf_all else None,
+        "recent_low":     float(min(sl_htf_all)) if sl_htf_all else None,
+    }
 
-    lines.append("")
+    def _fmt(prices: list) -> str:
+        return "  ·  ".join(f"{v:.5g}" for v in prices) if prices else "n/a"
+
+    # ── BLOCO 1 — Leitura da Estrutura ──────────────────────────────────────
+    st.markdown(f"#### {ticker}  ·  LTF {ltf}  /  HTF {htf}")
+    st.markdown("**Leitura da Estrutura**")
+
+    st.markdown(
+        f"**Tendência LTF ({ltf}):** {_TREND_PT.get(trend, trend)}  \n"
+        f"SH: {_fmt(sh_ltf)}  |  SL: {_fmt(sl_ltf)}"
+    )
+    st.markdown(
+        f"**Tendência HTF ({htf}):** {_TREND_PT.get(htf_trend, htf_trend)}  \n"
+        f"SH: {_fmt(sh_htf)}  |  SL: {_fmt(sl_htf)}"
+    )
 
     if kl:
-        q_label = _KL_Q_PT.get(kl_q.get("quality", ""), kl_q.get("quality", ""))
-        lines.append(
-            f"**Key Level ({kl.get('type', '?')}):** `{kl['price']:.5g}` "
-            f"— qualidade {q_label}."
+        kl_type_label  = "Up KL"   if kl.get("type") == "HL" else "Down KL"
+        kl_created_by  = "último HL que criou o HH" if kl.get("type") == "HL" \
+                         else "último LH que criou o LL"
+        q        = kl_q.get("quality", "normal")
+        q_reason = _KL_Q_REASON.get(q, q)
+        st.markdown(
+            f"**Key Level:** {kl_type_label}: `{kl['price']:.5g}` — {kl_created_by}.  \n"
+            f"Qualidade: **{q}** ({q_reason})."
         )
     else:
-        lines.append("**Key Level:** Não identificado — estrutura insuficiente.")
+        st.markdown("**Key Level:** Não identificado — estrutura insuficiente.")
 
-    if pb:
-        pat = _PAT_PT.get(pb.get("pattern", ""), pb.get("pattern", ""))
-        nc  = len(pb.get("candles", []))
-        lines.append(f"**Pullback:** {pat} ({nc} candle{'s' if nc > 1 else ''}).")
-    else:
-        lines.append("**Pullback:** Não detectado — aguardar setup de entrada.")
+    # ── BLOCO 2 — O que o mercado está a fazer agora ─────────────────────────
+    st.markdown("---")
+    st.markdown("**O que o mercado está a fazer agora**")
 
-    if bos:
-        if bos.get("valid"):
-            lines.append("**BOS:** Confirmado — breakout legítimo sobre a Key Level.")
-        elif bos.get("type") == "fake_breakout":
-            lines.append("**BOS:** Falso breakout — preço cruzou mas padrão não validado.")
+    current_price = float(df_ltf["close"].iloc[-1])
+    if kl:
+        kl_price = kl["price"]
+        dist_pct = abs(current_price - kl_price) / kl_price * 100 if kl_price else 100
+        if dist_pct < 1.0:
+            phase = f"a aproximar-se do KL ({dist_pct:.2f}% de distância)"
+        elif (trend == "uptrend"   and current_price > kl_price) or \
+             (trend == "downtrend" and current_price < kl_price):
+            phase = "Pulse Wave — preço a avançar desde o KL"
         else:
-            lines.append("**BOS:** Sem confirmação ainda.")
+            phase = "Pullback Wave — preço a recuar em direcção ao KL"
+        st.markdown(f"**Fase actual:** {phase}  |  Preço: `{current_price:.5g}`")
     else:
-        lines.append("**BOS:** Aguardar pullback para avaliar.")
+        st.markdown(f"**Preço actual:** `{current_price:.5g}`")
 
-    lines.append("")
+    if not cycle.get("cycle_active"):
+        tb    = cycle.get("terminated_by", "?")
+        zp    = htf_zones.get(tb)
+        zp_s  = f" `{zp:.5g}`" if zp else ""
+        st.markdown(f"**Ciclo:** Terminado — atingiu zona HTF{zp_s} ({tb}).")
+    elif cycle.get("warning"):
+        wz   = cycle.get("warning_zone", "")
+        zp   = htf_zones.get(wz)
+        zp_s = f" `{zp:.5g}`" if zp else ""
+        st.markdown(f"**Ciclo a ~80%** — próximo da zona HTF{zp_s} ({wz}).")
+    else:
+        st.markdown("**Ciclo:** Activo — espaço para continuar.")
 
-    n_ok = sum([ff.get("trend", False), ff.get("zone", False),
-                ff.get("momentum", False), ff.get("confirmation", False)])
+    if rng.get("detected"):
+        st.markdown(f"**Range detectado** ({rng.get('type', '?')}) — aguardar breakout.")
+
+    # ── BLOCO 3 — Acção sugerida ─────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("**Acção sugerida**")
+
     if ff.get("all_aligned"):
-        lines.append(
-            "**→ Setup completo:** 4/4 factores NCI presentes e ciclo activo. "
-            "Entrada válida sujeita a gestão de risco."
+        direction = "LONG" if trend == "uptrend" else "SHORT"
+        pattern   = _PAT_SHORT.get(pb.get("pattern", ""), pb.get("pattern", "")) if pb else "?"
+        bos_label = _BOS_SHORT.get(bos.get("type", ""), "confirmação") if bos else "confirmação"
+        st.markdown(
+            f"✅ **SETUP VÁLIDO — Entrar {direction} na zona `{kl['price']:.5g}`**  \n"
+            f"Padrão: {pattern}. Confirmar com {bos_label}."
+        )
+    elif rng.get("detected"):
+        st.markdown(
+            f"⏭️ **Skip** — mercado em range ({rng.get('type', '?')}). "
+            "Aguardar breakout válido."
+        )
+    elif not cycle.get("cycle_active"):
+        st.markdown("🚫 **Não entrar** — ciclo terminado. Aguardar nova estrutura.")
+    elif trend in ("range", "undefined"):
+        st.markdown("⏭️ **Skip** — sem tendência clara. Estrutura insuficiente.")
+    elif not ff.get("zone"):
+        st.markdown(
+            f"⏳ **Aguardar** — tendência {_TREND_PT.get(trend, trend)} "
+            "identificada mas sem Key Level válido."
+        )
+    elif not ff.get("momentum"):
+        direction = "LONG" if trend == "uptrend" else "SHORT"
+        kl_s      = f"`{kl['price']:.5g}`" if kl else "KL"
+        st.markdown(
+            f"⏳ **Aguardar pullback** ao KL {kl_s} e confirmação  \n"
+            f"(P1 Two Maru / P2 Big+Small / PAC) para entrar {direction}."
         )
     else:
-        missing = []
-        if not ff.get("trend"):           missing.append("tendência indefinida")
-        if not ff.get("zone"):            missing.append("KL inválido ou ausente")
-        if not ff.get("momentum"):        missing.append("sem pullback")
-        if not ff.get("confirmation"):    missing.append("sem BOS confirmado")
-        if not cycle.get("cycle_active"): missing.append("ciclo terminado")
-        lines.append(
-            f"**→ Factores: {n_ok}/4.**"
-            + (f"  Aguardar: {', '.join(missing)}." if missing else "")
-        )
-
-    return "\n".join(lines)
+        kl_s = f"`{kl['price']:.5g}`" if kl else "KL"
+        st.markdown(f"⏳ **Aguardar confirmação BOS** na zona {kl_s}.")
 
 
 # ── Main render ────────────────────────────────────────────────────────────
@@ -447,7 +517,7 @@ def render():
 
         kl_detail  = (f"{kl['price']:.5g}  ·  {kl_q.get('quality', '')}"
                       if kl else "não identificado")
-        pb_detail  = _PAT_PT.get(pb.get("pattern", ""), "") if pb else "aguardar"
+        pb_detail  = _PAT_SHORT.get(pb.get("pattern", ""), "") if pb else "aguardar"
         bos_detail = bos.get("type", "") if bos else "aguardar"
 
         st.markdown(
@@ -496,4 +566,4 @@ def render():
 
     st.markdown("---")
     st.markdown("#### Raciocínio NCI")
-    st.markdown(_build_reasoning(result, cur_tick, cur_ltf, cur_htf))
+    _render_reasoning(result, cur_tick, cur_ltf, cur_htf, df_ltf, df_htf)
