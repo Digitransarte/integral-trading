@@ -16,11 +16,12 @@ from universes import COMMODITIES, FOREX, REFERENCE
 # ── Timeframe fetch config ─────────────────────────────────────────────────
 
 _TF_FETCH = {
-    "M5":  ("5m",   10),
-    "M15": ("15m",  30),
-    "H1":  ("1h",   60),
-    "H4":  ("4h",  120),
+    "M5":  ("5m",    5),
+    "M15": ("15m",  10),
+    "H1":  ("1h",   30),
+    "H4":  ("4h",   60),
     "D1":  ("1d",  365),
+    "W1":  ("1wk", 730),
 }
 
 # ── Asset list ─────────────────────────────────────────────────────────────
@@ -54,8 +55,8 @@ def _load_data(ticker: str, ltf: str, htf: str):
 
     df_ltf = feed.get_bars_intraday(ticker, interval=ltf_interval, days=ltf_days)
 
-    if htf_interval == "1d":
-        df_htf = feed.get_bars(ticker, days=htf_days)
+    if htf_interval in ("1d", "1wk"):
+        df_htf = feed.get_bars(ticker, days=htf_days, interval=htf_interval)
     else:
         df_htf = feed.get_bars_intraday(ticker, interval=htf_interval, days=htf_days)
 
@@ -174,9 +175,10 @@ def _build_chart(df_display: pd.DataFrame,
 
     # ── Range rectangle
     rng = result.get("range", {})
-    if rng.get("has_range") and rng.get("range_high") and rng.get("range_low"):
+    if (rng.get("detected")
+            and rng.get("anchor_price_high") and rng.get("anchor_price_low")):
         fig.add_hrect(
-            y0=rng["range_low"], y1=rng["range_high"],
+            y0=rng["anchor_price_low"], y1=rng["anchor_price_high"],
             fillcolor="#475569", opacity=0.08,
             layer="below", line_width=0,
         )
@@ -223,6 +225,82 @@ def _build_chart(df_display: pd.DataFrame,
             rangeslider_visible=False,
             showgrid=True, gridcolor="#1E293B",
         ),
+        yaxis=dict(showgrid=True, gridcolor="#1E293B", side="right"),
+        font=dict(family="monospace", size=11),
+    )
+
+    return fig
+
+
+def _build_htf_chart(df_htf: pd.DataFrame, result: dict) -> go.Figure:
+    """Candlestick HTF com KL e swing markers HTF."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Candlestick(
+        x=df_htf.index,
+        open=df_htf["open"],
+        high=df_htf["high"],
+        low=df_htf["low"],
+        close=df_htf["close"],
+        name="",
+        increasing_line_color="#34D399",
+        decreasing_line_color="#F87171",
+        increasing_fillcolor="#34D399",
+        decreasing_fillcolor="#F87171",
+        showlegend=False,
+    ))
+
+    # HTF Key Level
+    htf_kl = result.get("htf_key_level")
+    if htf_kl:
+        fig.add_hline(
+            y=htf_kl["price"],
+            line_dash="dash",
+            line_color="#F59E0B",
+            line_width=1.5,
+            annotation_text=f"HTF KL {htf_kl['price']:.5g}",
+            annotation_position="top left",
+            annotation_font_color="#F59E0B",
+            annotation_font_size=10,
+        )
+
+    # HTF swing markers
+    try:
+        df_cl = classify_candles(df_htf.copy())
+        ms    = analyze_market_structure(df_cl, window=5)
+        df_sw = ms["df"]
+        disp  = set(df_htf.index)
+
+        sh_in = [i for i in df_sw[df_sw["swing_high"]].index if i in disp]
+        sl_in = [i for i in df_sw[df_sw["swing_low"]].index  if i in disp]
+
+        if sh_in:
+            fig.add_trace(go.Scatter(
+                x=sh_in,
+                y=[float(df_htf.loc[i, "high"]) * 1.0005 for i in sh_in],
+                mode="markers",
+                marker=dict(symbol="triangle-down", color="#60A5FA", size=9),
+                name="SH", showlegend=False,
+            ))
+        if sl_in:
+            fig.add_trace(go.Scatter(
+                x=sl_in,
+                y=[float(df_htf.loc[i, "low"]) * 0.9995 for i in sl_in],
+                mode="markers",
+                marker=dict(symbol="triangle-up", color="#A78BFA", size=9),
+                name="SL", showlegend=False,
+            ))
+    except Exception:
+        pass
+
+    fig.update_layout(
+        template="plotly_dark",
+        plot_bgcolor="#0D1117",
+        paper_bgcolor="#0D1117",
+        margin=dict(l=10, r=50, t=20, b=20),
+        height=420,
+        xaxis=dict(rangeslider_visible=False,
+                   showgrid=True, gridcolor="#1E293B"),
         yaxis=dict(showgrid=True, gridcolor="#1E293B", side="right"),
         font=dict(family="monospace", size=11),
     )
@@ -452,8 +530,8 @@ def render():
         )
         ticker = tickers[sel_idx]
 
-        htf = st.selectbox("HTF (Higher Time Frame)", ["H4", "D1", "H1"], index=0)
-        ltf = st.selectbox("LTF (Lower Time Frame)",  ["M15", "M5"],       index=0)
+        htf = st.selectbox("HTF (Higher Time Frame)", ["H1", "H4", "D1"], index=1)
+        ltf = st.selectbox("LTF (Lower Time Frame)",  ["M5", "M15", "H1"], index=1)
 
         n_candles = st.slider("Candles no gráfico", 50, 200, 100, step=10)
 
@@ -510,9 +588,10 @@ def render():
     bos   = result.get("bos")
     cycle = result.get("market_cycle", {})
 
-    col_left, col_right = st.columns([2, 3])
+    col_cards, col_htf, col_ltf = st.columns([1, 2, 2])
 
-    with col_left:
+    # ── Factor cards ──────────────────────────────────────────────────────────
+    with col_cards:
         st.markdown("#### 4 Factores NCI")
 
         kl_detail  = (f"{kl['price']:.5g}  ·  {kl_q.get('quality', '')}"
@@ -531,20 +610,20 @@ def render():
         )
 
         st.markdown("---")
-        st.markdown("**Ciclo de mercado**")
+        st.markdown("**Ciclo**")
 
         if not cycle.get("cycle_active"):
             tb = cycle.get("terminated_by") or "?"
             st.markdown(
                 f"<span style='color:#F87171;font-weight:600'>Terminado</span>"
-                f"<span style='color:#94A3B8;font-size:0.78rem'> ({tb})</span>",
+                f"<span style='color:#94A3B8;font-size:0.75rem'> ({tb})</span>",
                 unsafe_allow_html=True,
             )
         elif cycle.get("warning"):
             wz = cycle.get("warning_zone", "")
             st.markdown(
                 f"<span style='color:#F59E0B;font-weight:600'>⚠ Aviso</span>"
-                f"<span style='color:#94A3B8;font-size:0.78rem'> ({wz})</span>",
+                f"<span style='color:#94A3B8;font-size:0.75rem'> ({wz})</span>",
                 unsafe_allow_html=True,
             )
         else:
@@ -558,10 +637,19 @@ def render():
         if htf_kl:
             st.caption(f"HTF KL: {htf_kl['price']:.5g}")
 
-    with col_right:
+    # ── HTF chart ─────────────────────────────────────────────────────────────
+    with col_htf:
+        st.caption(f"HTF — {cur_htf}")
+        fig_htf = _build_htf_chart(df_htf, result)
+        st.plotly_chart(fig_htf, use_container_width=True,
+                        config={"displayModeBar": False})
+
+    # ── LTF chart ─────────────────────────────────────────────────────────────
+    with col_ltf:
+        st.caption(f"LTF — {cur_ltf}")
         df_display = df_ltf.tail(n_candles)
-        fig = _build_chart(df_display, df_ltf, df_htf, result)
-        st.plotly_chart(fig, use_container_width=True,
+        fig_ltf = _build_chart(df_display, df_ltf, df_htf, result)
+        st.plotly_chart(fig_ltf, use_container_width=True,
                         config={"displayModeBar": False})
 
     st.markdown("---")
