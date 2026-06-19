@@ -24,7 +24,7 @@ st.sidebar.markdown("---")
 
 page = st.sidebar.radio(
     "",
-    ["NCI", "NCI Backtest", "NCI Study", "Alertas", "Posicoes", "Diario"],
+    ["NCI", "Relações", "NCI Backtest", "NCI Study", "Alertas", "Posicoes", "Diario"],
     label_visibility="collapsed",
 )
 
@@ -34,6 +34,10 @@ st.sidebar.caption("v1.0.0 — NCI · paper trading")
 if page == "NCI":
     from pages.nci import render
     render()
+
+elif page == "Relações":
+    from pages.relacoes import render
+    render()    
 
 elif page == "NCI Backtest":
     from pages.nci_backtest import render
