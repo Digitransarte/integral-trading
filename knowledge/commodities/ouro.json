@@ -1,0 +1,234 @@
+{
+  "meta": {
+    "id": "ouro",
+    "nome": "Ouro",
+    "simbolo_spot": "XAUUSD",
+    "tickers_dados": {
+      "futuros": "GC=F",
+      "spot_proxy": "XAUUSD",
+      "etf_proxy": "GLD"
+    },
+    "tipo": "metal_precioso",
+    "natureza": "macro_driven",
+    "_comentario_natureza": "Ouro é movido sobretudo por fatores MACRO (dólar, yields, medo, bancos centrais) que existem como séries de preço — por isso a camada de correlação funciona bem aqui. Contraste com cacau (supply-shock, movido por clima que NÃO está em série de preço).",
+    "versao_ficha": "1.0",
+    "data_criacao": "2026-06-19",
+    "revisto_por": "pesquisa com evidência (WGC, PIMCO, SSGA, LSEG, World Bank)"
+  },
+
+  "resumo": "O ouro é simultaneamente uma matéria-prima, uma reserva de valor e um ativo de refúgio. O seu preço é dominado por quatro forças macro — dólar, yields reais, procura de refúgio e compras de bancos centrais — cujo PESO RELATIVO muda com o regime de mercado. Nenhuma relação é uma lei fixa: a clássica inversão ouro↔dólar QUEBROU em 2025, quando bancos centrais e medo de dívida soberana dominaram.",
+
+  "drivers": [
+    {
+      "id": "dolar_dxy",
+      "nome": "Dólar (US Dollar Index, DXY)",
+      "sentido": "inverso",
+      "forca_tipica": "forte",
+      "mecanismo": "O ouro é cotado globalmente em dólares. Dólar forte → ouro mais caro em moeda local → menos procura. É o headwind de curto prazo mais fiável.",
+      "regime_dependente": true,
+      "nota_regime": "ATENÇÃO: relação inverte-se de forma fiável APENAS quando a moeda é o fator dominante. Em 2025 o ouro subiu com o dólar relativamente forte porque bancos centrais e medo de dívida dominaram. A app deve DETECTAR quando esta correlação está ativa vs descolada.",
+      "ticker_observar": "DX=F",
+      "evidencia": "Dollar strength é o headwind de curto prazo mais fiável (goldsilver.com, 2026); a inversão clássica quebrou em 2025 (USAGOLD, 2025)."
+    },
+    {
+      "id": "yields_reais",
+      "nome": "Yields reais (10Y TIPS / taxas reais)",
+      "sentido": "inverso",
+      "forca_tipica": "forte",
+      "mecanismo": "Ouro não rende juros. Yields reais altos = maior custo de oportunidade de o deter. Yields reais a cair = ouro mais atrativo.",
+      "regime_dependente": false,
+      "nota_quantitativa": "Estudo PIMCO (2004-2025): +100 pontos-base nos yields reais a 10Y → -18% no preço real do ouro. 'Duração real' de ~18 anos. Esta é das relações mais estáveis e mensuráveis.",
+      "ticker_observar": "10Y TIPS yield (FRED: DFII10)",
+      "evidencia": "PIMCO regression study (2026); IG commodities outlook (2025)."
+    },
+    {
+      "id": "refugio",
+      "nome": "Procura de refúgio (medo, geopolítica, risco sistémico)",
+      "sentido": "direto",
+      "forca_tipica": "media",
+      "mecanismo": "Em crise, investidores procuram reserva de valor. MAS é assimétrico: conflitos regionais comuns muitas vezes NÃO movem o ouro; só eventos que ameaçam o sistema/estatuto do dólar têm efeito forte e duradouro.",
+      "regime_dependente": true,
+      "nota_regime": "Cuidado com a intuição ingénua 'guerra = ouro sobe'. Em Fev-Mar 2026, apesar do conflito Irão, o ouro CAIU — porque a subida do petróleo alimentou inflação, o que empurrou yields e dólar para cima (os headwinds dominaram). Em crises de liquidez, o ouro é até VENDIDO para cobrir perdas noutros ativos.",
+      "ticker_observar": "VIX, rácio ouro/petróleo",
+      "evidencia": "WGC outlook (2026): conflito regional ≠ resposta imediata do ouro; XS/naga (2026): liquidity squeeze forçou venda de ouro."
+    },
+    {
+      "id": "bancos_centrais",
+      "nome": "Compras de bancos centrais",
+      "sentido": "direto",
+      "forca_tipica": "forte_estrutural",
+      "mecanismo": "Bancos centrais (lideradas por China, mercados emergentes) compram ouro como diversificação face ao dólar. É procura estrutural e estabilizadora — o 'chão' do mercado.",
+      "regime_dependente": false,
+      "nota_quantitativa": "863t compradas em 2025; 244t no Q1 2026 (+3% a/a). Estimativa de ~800t/ano em curso. Compensa volatilidade de outros setores (ETFs, joalharia).",
+      "ticker_observar": "dados trimestrais WGC (não é série diária)",
+      "evidencia": "WGC Gold Demand Trends Q1 2026; GoldRepublic (2026)."
+    },
+    {
+      "id": "fluxos_etf",
+      "nome": "Fluxos de ETFs de ouro",
+      "sentido": "direto",
+      "forca_tipica": "media",
+      "mecanismo": "Entradas em ETFs físicos (GLD etc.) = procura de investimento. Indicador de sentimento de curto/médio prazo. Em risk-on, capital roda para fora do ouro (ex: Maio 2026, capital saiu para ETFs de tecnologia).",
+      "regime_dependente": true,
+      "ticker_observar": "GLD volume/holdings; dados WGC ETF flows (semanal)",
+      "evidencia": "WGC ETF Flows (Maio 2026): rotação ouro→tecnologia em risk-on."
+    },
+    {
+      "id": "inflacao",
+      "nome": "Inflação / expectativas de inflação",
+      "sentido": "direto",
+      "forca_tipica": "media",
+      "mecanismo": "Ouro como hedge contra desvalorização monetária e risco de duração. Liga-se aos yields reais (yield nominal menos inflação).",
+      "regime_dependente": true,
+      "nota_regime": "Efeito ambíguo: inflação alta pode ajudar o ouro (hedge) OU prejudicar (se força o Fed a subir taxas → yields reais sobem). Ver sempre em conjunto com yields_reais.",
+      "ticker_observar": "breakevens 10Y (FRED: T10YIE)",
+      "evidencia": "SSGA outlook 2026; naga (2026)."
+    }
+  ],
+
+  "relacoes_ativos": [
+    {
+      "ativo": "DXY (dólar)",
+      "ticker": "DX=F",
+      "sentido_esperado": "inverso",
+      "forca_historica": "forte (mas regime-dependente)",
+      "leitura_nuno": null,
+      "_nota": "leitura_nuno = campo para a TUA leitura qualitativa; correlação numérica é calculada pela app (janela 60d)"
+    },
+    {
+      "ativo": "Prata (XAGUSD)",
+      "ticker": "SI=F",
+      "sentido_esperado": "direto",
+      "forca_historica": "media-forte",
+      "leitura_nuno": null,
+      "_nota": "Prata correlaciona com ouro MAS comporta-se como ativo cíclico/industrial em risk-off (não é refúgio puro). 70-80% da prata é subproduto de cobre/chumbo/zinco. O rácio ouro/prata EXPANDE em risk-off (ouro aguenta, prata cai). Rácio >100 historicamente precede reversões."
+    },
+    {
+      "ativo": "Petróleo (WTI)",
+      "ticker": "CL=F",
+      "sentido_esperado": "quase_nulo",
+      "forca_historica": "fraca (≈ -0.03 em média)",
+      "leitura_nuno": null,
+      "_nota": "SURPRESA: ouro e petróleo são quase descorrelacionados em média. Só ficam inversos em choques extremos. O rácio ouro/petróleo correlaciona-se com o VIX — é um indicador de medo, não uma relação direta de preço."
+    },
+    {
+      "ativo": "Cobre (HG=F)",
+      "ticker": "HG=F",
+      "sentido_esperado": "variavel",
+      "forca_historica": "media",
+      "leitura_nuno": null,
+      "_nota": "Cobre = barómetro de crescimento ('Dr. Copper'). Rácio ouro/cobre sobe em recessão/crise (ouro refúgio, cobre cíclico). O rácio ouro/cobre e ouro/petróleo são os mais correlacionados entre si."
+    },
+    {
+      "ativo": "Obrigações Tesouro EUA 10Y",
+      "ticker": "ZN=F",
+      "sentido_esperado": "direto",
+      "forca_historica": "moderada (≈0.39)",
+      "leitura_nuno": null,
+      "_nota": "Ouro tem correlação POSITIVA moderada com obrigações do governo (ambos beneficiam de yields a cair / fuga para qualidade)."
+    },
+    {
+      "ativo": "S&P 500",
+      "ticker": "ES=F",
+      "sentido_esperado": "inverso_em_crise",
+      "forca_historica": "baixa em geral, negativa em drawdowns",
+      "leitura_nuno": null,
+      "_nota": "Em geral pouco correlacionado; em quedas fortes de ações, a correlação fica negativa (refúgio). É essa negatividade em drawdown que dá ao ouro o papel de diversificador."
+    }
+  ],
+
+  "regimes": [
+    {
+      "nome": "Risk-off / refúgio",
+      "descricao": "Medo sistémico domina. Ouro sobe, prata cai (rácio ouro/prata expande), ações caem.",
+      "drivers_dominantes": ["refugio", "bancos_centrais"],
+      "sinal_deteccao": "VIX alto, rácio ouro/prata a subir, S&P a cair"
+    },
+    {
+      "nome": "Macro / taxas",
+      "descricao": "Dólar e yields reais mandam. Relação inversa clássica ativa.",
+      "drivers_dominantes": ["dolar_dxy", "yields_reais"],
+      "sinal_deteccao": "correlação ouro/DXY fortemente negativa na janela recente"
+    },
+    {
+      "nome": "Estrutural / desdolarização",
+      "descricao": "Compras de bancos centrais e medo de dívida soberana dominam. A relação ouro↔dólar QUEBRA (ouro sobe mesmo com dólar forte). Foi o regime de 2025.",
+      "drivers_dominantes": ["bancos_centrais"],
+      "sinal_deteccao": "ouro sobe E dólar sobe ao mesmo tempo (correlação positiva anómala) — AVISO de regime estrutural"
+    },
+    {
+      "nome": "Liquidity squeeze",
+      "descricao": "Crise de liquidez: tudo é vendido, incluindo ouro, para cobrir perdas. Ouro cai apesar do medo.",
+      "drivers_dominantes": [],
+      "sinal_deteccao": "ouro cai junto com ações em pânico extremo"
+    }
+  ],
+
+  "sazonalidade": {
+    "nota": "Padrões sazonais existem mas são fracos face aos drivers macro. Procura física (joalharia) tende a subir em festivais (Índia: Diwali out-nov; China: Ano Novo jan-fev) e época de casamentos. NÃO usar como sinal isolado.",
+    "meses_historicamente_fortes": ["janeiro", "fevereiro", "agosto", "setembro"],
+    "meses_historicamente_fracos": ["marco", "junho"]
+  },
+
+  "fontes": [
+    {
+      "nome": "World Gold Council — Goldhub",
+      "url": "https://www.gold.org/goldhub/data",
+      "tipo": "dados_fundamentais",
+      "cobre": ["bancos_centrais", "fluxos_etf", "procura por setor", "produção mineira"],
+      "frequencia": "trimestral (demand trends) + semanal/mensal (ETF flows)",
+      "custo": "gratuito",
+      "nota": "A fonte primária para drivers de PROCURA física. Download em Excel."
+    },
+    {
+      "nome": "FRED (St. Louis Fed)",
+      "url": "https://fred.stlouisfed.org",
+      "tipo": "dados_macro",
+      "cobre": ["yields_reais (DFII10)", "breakevens (T10YIE)", "DXY"],
+      "frequencia": "diaria",
+      "custo": "gratuito (tem API)",
+      "nota": "Essencial para yields reais — o driver mais mensurável. API gratuita, ideal para o cron matinal."
+    },
+    {
+      "nome": "CFTC Commitments of Traders (COT)",
+      "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders",
+      "tipo": "posicionamento",
+      "cobre": ["posicionamento especulativo (risco de unwind)"],
+      "frequencia": "semanal (sexta)",
+      "custo": "gratuito",
+      "nota": "Mostra se especuladores estão sobre-posicionados — sinal de risco de correção rápida (como Março 2026)."
+    },
+    {
+      "nome": "Polygon / yfinance (já na app)",
+      "url": "https://polygon.io",
+      "tipo": "precos",
+      "cobre": ["preço GC=F, séries para correlações e NCI"],
+      "frequencia": "diaria/intraday",
+      "custo": "Polygon (chave já configurada) + yfinance gratuito",
+      "nota": "A app já usa via data_feed.py. Base para a camada de correlações e o NCI."
+    },
+    {
+      "nome": "Finnhub (calendário económico, já na app)",
+      "url": "https://finnhub.io",
+      "tipo": "noticias_calendario",
+      "cobre": ["eventos Fed, dados macro EUA, calendário de alto impacto"],
+      "frequencia": "tempo real",
+      "custo": "chave já configurada",
+      "nota": "Para a camada de monitorização — filtrar eventos que tocam dólar/yields/Fed."
+    }
+  ],
+
+  "para_a_app": {
+    "calculado_dinamicamente": [
+      "correlação móvel 60d ouro × cada ativo de relacoes_ativos",
+      "deteção de regime ativo (comparar correlações observadas com regimes[])",
+      "alerta quando uma relação 'forte' descola (ex: ouro/DXY deixa de ser negativo)"
+    ],
+    "preenchido_por_research": [
+      "drivers[], relacoes_ativos[].sentido_esperado, regimes[], fontes[]"
+    ],
+    "preenchido_por_nuno": [
+      "relacoes_ativos[].leitura_nuno — a tua leitura qualitativa de cada relação"
+    ]
+  }
+}
