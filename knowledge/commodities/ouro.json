@@ -89,7 +89,7 @@
   "relacoes_ativos": [
     {
       "ativo": "DXY (dólar)",
-      "ticker": "DX=F",
+      "ticker": "DX-Y.NYB",
       "sentido_esperado": "inverso",
       "forca_historica": "forte (mas regime-dependente)",
       "leitura_nuno": null,
