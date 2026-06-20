@@ -18,6 +18,7 @@ DB_PATH   = DATA_DIR / "integral_trading.db"
 STRATEGIES_DIR = DATA_DIR / "strategies"
 
 POLYGON_API_KEY   = os.getenv("POLYGON_API_KEY",   "")
+FINNHUB_API_KEY   = os.getenv("FINNHUB_API_KEY",   "")
 ANTHROPIC_API_KEY     = os.getenv("ANTHROPIC_API_KEY", "")
 CLAUDE_MODEL_DECISION = "claude-opus-4-7"   # decisões qualitativas
 CLAUDE_MODEL_FAST     = "claude-sonnet-4-6" # chamadas estruturadas/rápidas
