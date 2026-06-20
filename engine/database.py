@@ -65,6 +65,23 @@ def init_db():
             catalyst      TEXT DEFAULT "",
             metadata      TEXT DEFAULT "{}"
         );
+        CREATE TABLE IF NOT EXISTS noticias (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            commodity     TEXT NOT NULL,
+            titulo        TEXT NOT NULL,
+            fonte         TEXT,
+            url           TEXT,
+            data          TEXT,
+            origem        TEXT DEFAULT "finnhub",
+            driver_id     TEXT,
+            driver_nome   TEXT,
+            sentido       TEXT,
+            relevancia    INTEGER,
+            resumo        TEXT,
+            impacto       TEXT,
+            hash          TEXT UNIQUE,
+            created_at    TEXT DEFAULT CURRENT_TIMESTAMP
+        );
         """)
 
 
