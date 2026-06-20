@@ -24,7 +24,7 @@ st.sidebar.markdown("---")
 
 page = st.sidebar.radio(
     "",
-    ["NCI", "Relações", "NCI Backtest", "NCI Study", "Alertas", "Posicoes", "Diario"],
+    ["NCI", "Relações", "Notícias","NCI Backtest", "NCI Study", "Alertas", "Posicoes", "Diario"],
     label_visibility="collapsed",
 )
 
@@ -37,7 +37,11 @@ if page == "NCI":
 
 elif page == "Relações":
     from pages.relacoes import render
-    render()    
+    render() 
+       
+elif page == "Notícias":
+    from pages.noticias import render
+    render()
 
 elif page == "NCI Backtest":
     from pages.nci_backtest import render
