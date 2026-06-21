@@ -1147,6 +1147,78 @@ def analyze_nci(df_ltf: pd.DataFrame,
         },
     }
 
+# ── Avaliação de setup (fonte única para página e relatório) ────────────
+
+def avaliar_setup(df_ltf, df_htf, ltf_window: int = 3, htf_window: int = 5) -> dict:
+    """
+    Fonte ÚNICA de verdade para o sinal NCI. Corre analyze_nci e traduz o
+    resultado num veredicto acionável: direção, validade, e rótulo de
+    confluência LTF↔HTF com nota de risco.
+
+    Usado tanto pela página NCI Study como pelo relatório matinal — para
+    que ambos digam exatamente a mesma coisa.
+
+    Retorna:
+        {
+          "valido": bool,
+          "direcao": "LONG" | "SHORT" | None,
+          "zona": float | None,
+          "ltf_trend": str,
+          "htf_trend": str,
+          "rotulo": str,          # "Confluência" | "HTF Range" | "Não-confluência" | ""
+          "risco": str,           # "baixo" | "médio" | "elevado" | ""
+          "nota": str,            # explicação curta
+        }
+    """
+    res = analyze_nci(df_ltf, df_htf, ltf_window=ltf_window, htf_window=htf_window)
+    ff = res.get("four_factors", {})
+    trend = res.get("trend", "undefined")
+    htf_trend = res.get("htf_trend", "undefined")
+    kl = res.get("key_level")
+    cycle = res.get("market_cycle", {})
+
+    # Sem setup válido → devolve motivo neutro
+    if not ff.get("all_aligned"):
+        if not cycle.get("cycle_active"):
+            nota = "ciclo terminado — aguardar nova estrutura"
+        elif trend in ("range", "undefined"):
+            nota = "sem tendência clara no LTF — aguardar"
+        elif not ff.get("zone"):
+            nota = "sem Key Level válido"
+        elif not ff.get("momentum"):
+            nota = "à espera de pullback ao KL"
+        else:
+            nota = "à espera de confirmação BOS"
+        return {
+            "valido": False, "direcao": None, "zona": None,
+            "ltf_trend": trend, "htf_trend": htf_trend,
+            "rotulo": "", "risco": "", "nota": nota,
+        }
+
+    # Setup válido → direção e rótulo de confluência
+    direcao = "LONG" if trend == "uptrend" else "SHORT"
+    setup_dir = "uptrend" if direcao == "LONG" else "downtrend"
+
+    if htf_trend == setup_dir:
+        rotulo, risco = "Confluência", "baixo"
+        nota = "HTF na mesma direção — vento de fundo a favor"
+    elif htf_trend in ("range", "undefined"):
+        rotulo, risco = "HTF Range", "médio"
+        nota = "HTF lateral — LTF dá a direção, sem vento de fundo"
+    else:
+        rotulo, risco = "Não-confluência", "elevado"
+        nota = "contra a tendência do HTF — entrada de reversão, exige timing"
+
+    return {
+        "valido": True,
+        "direcao": direcao,
+        "zona": kl["price"] if kl else None,
+        "ltf_trend": trend,
+        "htf_trend": htf_trend,
+        "rotulo": rotulo,
+        "risco": risco,
+        "nota": nota,
+    }
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Testes
