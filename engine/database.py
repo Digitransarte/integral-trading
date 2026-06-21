@@ -82,6 +82,17 @@ def init_db():
             hash          TEXT UNIQUE,
             created_at    TEXT DEFAULT CURRENT_TIMESTAMP
         );
+        CREATE TABLE IF NOT EXISTS relatorios (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            commodity     TEXT NOT NULL,
+            data          TEXT NOT NULL,
+            conviccao     TEXT,
+            direcao       TEXT,
+            leitura       TEXT,
+            payload       TEXT,
+            created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(commodity, data)
+        );
         """)
 
 

@@ -166,6 +166,51 @@ def gerar_relatorio(commodity_id: str, nci_resultado: dict | None = None) -> Mor
         leitura=leitura,
     )
 
+# ── Persistência de relatórios ──────────────────────────────────────────
+
+import json as _json
+from engine.database import get_conn, init_db
+
+
+def _report_to_dict(r: MorningReport) -> dict:
+    return {
+        "commodity": r.commodity, "nome": r.nome, "gerado_em": r.gerado_em,
+        "regime": r.regime, "noticias": r.noticias, "nci": r.nci,
+        "votos": [{"camada": v.camada, "direcao": v.direcao, "detalhe": v.detalhe}
+                  for v in r.votos],
+        "conviccao": r.conviccao, "direcao_sintese": r.direcao_sintese,
+        "leitura": r.leitura,
+    }
+
+
+def guardar_relatorio(r: MorningReport) -> None:
+    """Guarda o relatório (um por commodity por dia; atualiza se já existir)."""
+    init_db()
+    data = r.gerado_em.split(" ")[0]  # só a data, sem hora
+    with get_conn() as conn:
+        conn.execute("""
+            INSERT INTO relatorios (commodity, data, conviccao, direcao, leitura, payload)
+            VALUES (?,?,?,?,?,?)
+            ON CONFLICT(commodity, data) DO UPDATE SET
+                conviccao=excluded.conviccao, direcao=excluded.direcao,
+                leitura=excluded.leitura, payload=excluded.payload
+        """, (r.commodity, data, r.conviccao, r.direcao_sintese,
+              r.leitura, _json.dumps(_report_to_dict(r), ensure_ascii=False)))
+
+
+def ler_relatorio(commodity_id: str, data: str | None = None) -> dict | None:
+    """Lê o relatório guardado de um dia (ou o mais recente se data=None)."""
+    init_db()
+    with get_conn() as conn:
+        if data:
+            row = conn.execute(
+                "SELECT payload FROM relatorios WHERE commodity=? AND data=?",
+                (commodity_id, data)).fetchone()
+        else:
+            row = conn.execute(
+                "SELECT payload FROM relatorios WHERE commodity=? "
+                "ORDER BY data DESC LIMIT 1", (commodity_id,)).fetchone()
+    return _json.loads(row["payload"]) if row else None
 
 if __name__ == "__main__":
     # Teste: python -m engine.morning_report
