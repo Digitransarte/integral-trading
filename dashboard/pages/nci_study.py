@@ -484,6 +484,29 @@ def _render_reasoning(result: dict, ticker: str, ltf: str, htf: str,
             f"✅ **SETUP VÁLIDO — Entrar {direction} na zona `{kl['price']:.5g}`**  \n"
             f"Padrão: {pattern}. Confirmar com {bos_label}."
         )
+
+        # ── Rótulo de confluência LTF↔HTF ──────────────────────────────
+        # Direção do setup vs tendência do HTF → qualidade contextual
+        setup_dir = "uptrend" if direction == "LONG" else "downtrend"
+        if htf_trend == setup_dir:
+            st.success(
+                "🟢 **Confluência** — o HTF segue a mesma direcção do setup. "
+                "Maior probabilidade: vento de fundo a favor. "
+                "Risco: **baixo** — tamanho de posição normal."
+            )
+        elif htf_trend in ("range", "undefined"):
+            st.warning(
+                "🟡 **HTF em Range** — o timeframe superior está lateral, sem direcção. "
+                "O LTF dá a direcção, mas sem vento de fundo. "
+                "Risco: **médio** — considerar posição reduzida e alvos mais curtos."
+            )
+        else:
+            st.error(
+                "🔴 **Não-confluência** — o setup vai contra a tendência do HTF "
+                "(entrada de reversão / scalp). Válido no NCI, mas exige timing preciso "
+                "e o HTF deve estar a esgotar-se num Key Level. "
+                "Risco: **elevado** — posição reduzida, alvo curto, sair rápido se falhar."
+            )
     elif rng.get("detected"):
         st.markdown(
             f"⏭️ **Skip** — mercado em range ({rng.get('type', '?')}). "
