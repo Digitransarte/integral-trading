@@ -313,20 +313,22 @@ def find_swings(df: pd.DataFrame, window: int = 2) -> pd.DataFrame:
     return result
 
 
-def define_trend(swing_highs: list, swing_lows: list) -> str:
+def define_trend(swing_highs: list, swing_lows: list, lookback: int = 3) -> str:
     """
-    Classifica a tendência a partir das últimas sequências de swings.
+    Classifica a tendência a partir de uma SEQUÊNCIA de swings (não só os 2 últimos).
 
-    Regras (aplicadas sobre os últimos 2 SH e últimos 2 SL):
-      HH (h2 > h1) AND HL (l2 > l1) → "uptrend"
-      LH (h2 < h1) AND LL (l2 < l1) → "downtrend"
-      caso contrário                  → "range"
+    Em vez de comparar apenas o último par de swings — que apanha estrutura
+    interna (pullbacks) e a confunde com a tendência principal — exige uma
+    sequência consistente nos últimos `lookback` swings:
 
-    Se não houver pelo menos 2 SH e 2 SL retorna "undefined".
+      uptrend   → SH ascendentes (cada um > anterior) E SL ascendentes
+      downtrend → SH descendentes E SL descendentes
+      range     → sequência mista (sem direção clara)
 
     Args:
-        swing_highs: lista de preços dos Swing Highs em ordem cronológica
-        swing_lows:  lista de preços dos Swing Lows  em ordem cronológica
+        swing_highs: preços dos Swing Highs em ordem cronológica
+        swing_lows:  preços dos Swing Lows em ordem cronológica
+        lookback:    nº de swings a considerar (default 3 = 2 pernas)
 
     Retorna:
         "uptrend" | "downtrend" | "range" | "undefined"
@@ -334,17 +336,24 @@ def define_trend(swing_highs: list, swing_lows: list) -> str:
     if len(swing_highs) < 2 or len(swing_lows) < 2:
         return "undefined"
 
-    h1, h2 = swing_highs[-2], swing_highs[-1]
-    l1, l2 = swing_lows[-2],  swing_lows[-1]
+    # Usa os últimos `lookback` swings de cada lado (ou todos, se houver menos)
+    hs = swing_highs[-lookback:]
+    ls = swing_lows[-lookback:]
 
-    hh = h2 > h1
-    hl = l2 > l1
-    lh = h2 < h1
-    ll = l2 < l1
+    def _ascendente(seq: list) -> bool:
+        return all(seq[i] > seq[i - 1] for i in range(1, len(seq)))
 
-    if hh and hl:
+    def _descendente(seq: list) -> bool:
+        return all(seq[i] < seq[i - 1] for i in range(1, len(seq)))
+
+    highs_up = _ascendente(hs)
+    lows_up  = _ascendente(ls)
+    highs_dn = _descendente(hs)
+    lows_dn  = _descendente(ls)
+
+    if highs_up and lows_up:
         return "uptrend"
-    if lh and ll:
+    if highs_dn and lows_dn:
         return "downtrend"
     return "range"
 
