@@ -15,6 +15,9 @@ from engine.knowledge import load_commodity
 from engine.correlations import analyze_correlations, detectar_regime
 from engine.news_store import ler as ler_noticias
 
+from engine.data_feed import DataFeed
+from engine.nci_engine import avaliar_setup
+
 logger = logging.getLogger(__name__)
 
 
@@ -127,8 +130,24 @@ def gerar_relatorio(commodity_id: str, nci_resultado: dict | None = None) -> Mor
     # Notícias materiais recentes
     noticias = ler_noticias(commodity_id, dias=7, min_relevancia=4)
 
-    # NCI (passado de fora, ou neutro)
-    nci = nci_resultado or {"direcao": None, "nota": "não avaliado nesta geração"}
+    ## NCI — calcula o setup real (LTF H1, HTF Daily) se não vier de fora
+    if nci_resultado is not None:
+        nci = nci_resultado
+    else:
+        try:
+            feed = DataFeed()
+            ticker = ficha.ticker_dados or ficha.simbolo_spot
+            ltf = feed.get_bars(ticker, days=30, interval="1h")
+            htf = feed.get_bars(ticker, days=180, interval="1d")
+            setup = avaliar_setup(ltf, htf)
+            nci = {
+                "direcao": setup["direcao"],
+                "rotulo": setup["rotulo"],
+                "nota": setup["nota"],
+            }
+        except Exception as e:
+            logger.error("Erro a avaliar NCI: %s", e)
+            nci = {"direcao": None, "nota": "erro ao avaliar"}
 
     # Votos
     votos = [_voto_regime(reg), _voto_noticias(noticias), _voto_nci(nci)]
